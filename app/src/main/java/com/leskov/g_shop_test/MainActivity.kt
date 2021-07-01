@@ -1,11 +1,11 @@
 package com.leskov.g_shop_test
 
-import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
+import com.leskov.g_shop_test.core.activity.BaseBindingActivity
+import com.leskov.g_shop_test.databinding.ActivityMainBinding
 
-class MainActivity : AppCompatActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-    }
+class MainActivity : BaseBindingActivity<ActivityMainBinding>() {
+
+    override val layoutId: Int
+        get() = R.layout.activity_main
+
 }

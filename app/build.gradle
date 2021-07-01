@@ -4,6 +4,7 @@ plugins {
     id 'kotlin-kapt'
     id 'com.google.gms.google-services'
     id 'com.google.firebase.crashlytics'
+    id 'com.google.firebase.appdistribution'
 }
 
 android {
@@ -50,7 +51,11 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth:21.0.1'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'com.google.firebase:firebase-crashlytics:18.0.1'
+    implementation 'com.google.firebase:firebase-analytics-ktx:19.0.0'
     implementation 'com.google.firebase:firebase-storage-ktx:20.0.0'
+    implementation 'com.google.firebase:firebase-firestore-ktx:23.0.1'
+    implementation 'com.google.firebase:firebase-auth-ktx:21.0.1'
+    implementation 'com.google.firebase:firebase-crashlytics-ktx:18.1.0'
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
@@ -108,12 +113,17 @@ dependencies {
     implementation 'com.google.firebase:firebase-analytics:19.0.0'
     implementation 'com.google.firebase:firebase-analytics-ktx'
 
-    // Koin AndroidX Scope features
-    implementation "org.koin:koin-androidx-scope:$koin_version"
-    // Koin AndroidX ViewModel features
-    implementation "org.koin:koin-androidx-viewmodel:$koin_version"
-    // Koin AndroidX Fragment features
-    implementation "org.koin:koin-androidx-fragment:$koin_version"
-    // Koin AndroidX WorkManager
-    implementation "org.koin:koin-androidx-workmanager:$koin_version"
+    implementation 'org.koin:koin-android:2.1.5'
+    implementation 'org.koin:koin-androidx-scope:2.1.5'
+    implementation 'org.koin:koin-androidx-viewmodel:2.1.5'
+    implementation 'org.koin:koin-androidx-fragment:2.1.5'
+
+//    // Koin AndroidX Scope features
+//    implementation "org.koin:koin-androidx-scope:2.0.0"
+//    // Koin AndroidX ViewModel features
+//    implementation "org.koin:koin-androidx-viewmodel:2.0.0"
+//    // Koin AndroidX Fragment features
+//    implementation "org.koin:koin-androidx-fragment:2.0.0"
+//    // Koin AndroidX WorkManager
+//    implementation "org.koin:koin-androidx-workmanager:2.0.0"
 }

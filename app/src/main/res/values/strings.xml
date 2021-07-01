@@ -1,3 +1,40 @@
 <resources>
     <string name="app_name">G-shop-test</string>
+    <string name="login">Login</string>
+    <string name="registration">Registration</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="continue_register">Continue</string>
+    <string name="name">Name</string>
+    <string name="surname">Surname</string>
+    <string name="city">City</string>
+    <string name="phone_number">Phone Number</string>
+    <string name="register">Register</string>
+    <string name="title_template">Gibson Les Paul</string>
+    <string name="price_template">1000 $</string>
+    <string name="create_advert">Create Advert</string>
+    <string name="headline">Headline</string>
+    <string name="add_photos">Add Photos</string>
+    <string name="description">Description</string>
+    <string name="create">Create</string>
+    <string name="home">Home</string>
+    <string name="profile">Profile</string>
+    <string name="price">Price</string>
+    <string name="template_description">The Gibson Les Paul is a solid body electric guitar that was first sold by the Gibson Guitar Corporation in 1952. The Les Paul was designed by Gibson president Ted McCarty, factory manager John Huis and their team with input from and endorsement by guitarist Les Paul. Its typical design features a solid maho</string>
+
+    <string name="invalid_email">Invalid email</string>
+    <string name="invalid_password">Invalid password</string>
+    <string name="invalid_email_or_password">Invalid email or password</string>
+    <string name="set_price">Please set price</string>
+    <string name="set_description">Please write description</string>
+    <string name="set_headline">Write a headline</string>
+    <string name="empty_email">Email field is empty</string>
+    <string name="empty_password">Password field is empty</string>
+    <string name="complete_fields">"Please, complete all fields"</string>
+    <string name="your_advert">Your Advert</string>
+    <string name="template_title">Gibson Les Paul</string>
+    <string name="profile_editing">Profile Editing</string>
+    <string name="your_adverts">Your Adverts</string>
+    <string name="about_yourself">About Yourself</string>
+    <string name="save">Save</string>
 </resources>

@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "289793327960",
+    "project_id": "g-shop-test",
+    "storage_bucket": "g-shop-test.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:289793327960:android:921a95969ecca815f5db2d",
+        "android_client_info": {
+          "package_name": "com.leskov.g_shop_test"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "289793327960-kv014v89bfc37cqg722svq3meo5kb16i.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.leskov.g_shop_test",
+            "certificate_hash": "bf4ffa9e51c0758e336006d4559fc581f1780843"
+          }
+        },
+        {
+          "client_id": "289793327960-946t2fgitp2hkq8b1c9jl6q4iu4gcepf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDzDg7QsNUFiHttWjYZ8SqXZ_1F9Fha5xU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "289793327960-946t2fgitp2hkq8b1c9jl6q4iu4gcepf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
