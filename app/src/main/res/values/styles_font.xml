@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--    fontWeight: 100-->
+
+    <!--    fontWeight: 300-->
+
+    <!--    fontWeight: 400-->
+    <style name="RegularFont">
+        <item name="fontFamily">@font/roboto_regular</item>
+    </style>
+
+    <!--    fontWeight: 500-->
+
+    <!--    fontWeight: 700-->
+    <style name="BoldFont">
+        <item name="fontFamily">@font/roboto_bold</item>
+    </style>
+
+    <!--    fontWeight: 900-->
+
+    <style name="LightFont">
+        <item name="fontFamily">@font/roboto_light</item>
+    </style>
+</resources>

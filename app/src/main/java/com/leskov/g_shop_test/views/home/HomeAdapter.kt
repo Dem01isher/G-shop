@@ -3,13 +3,12 @@ package com.leskov.g_shop_test.views.home
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.bumptech.glide.Glide
-import com.leskov.g_shop_test.core.recycler_view_adapter.BaseRecyclerViewAdapter
-import com.leskov.g_shop_test.core.recycler_view_adapter.BindingHolder
-import com.leskov.g_shop_test.domain.responses.AdvertResponse
 import com.leskov.g_shop_test.R
 import com.leskov.g_shop_test.core.recycler_view_adapter.BaseListAdapter
+import com.leskov.g_shop_test.core.recycler_view_adapter.BindingHolder
 import com.leskov.g_shop_test.databinding.ListItemAdvertBinding
-import com.leskov.g_shop_test.utils.diff_callbacks.shopDiffCallback
+import com.leskov.g_shop_test.domain.responses.AdvertResponse
+import com.leskov.g_shop_test.utils.diff_callbacks.advertDiffCallback
 
 
 /**
@@ -18,9 +17,8 @@ import com.leskov.g_shop_test.utils.diff_callbacks.shopDiffCallback
  */
 
 class HomeAdapter(
-    private val click : (advert : AdvertResponse) -> Unit
-) : BaseListAdapter<AdvertResponse, ListItemAdvertBinding>(click, shopDiffCallback) {
-
+    private val click: (advert: AdvertResponse) -> Unit
+) : BaseListAdapter<AdvertResponse, ListItemAdvertBinding>(click, advertDiffCallback) {
     override val layoutId: Int = R.layout.list_item_advert
 
     override fun onCreateViewHolder(
@@ -31,15 +29,31 @@ class HomeAdapter(
             ListItemAdvertBinding.inflate(
                 LayoutInflater.from(
                     parent.context
-                ), parent, false
+                ),
+                parent, false
             )
         )
 
     override fun onBindViewHolder(holder: BindingHolder<ListItemAdvertBinding>, position: Int) {
-        holder.binding.advert = getItem(holder.adapterPosition)
+        super.onBindViewHolder(holder, position)
+
+        val item = getItem(holder.adapterPosition)
+
+        holder.binding.advert = item
+
+        if (item.images.size == 0) {
+            Glide.with(holder.itemView.context)
+                .load(R.drawable.ic_guitaricon)
+                .into(holder.binding.poster)
+        } else {
+            Glide.with(holder.itemView.context)
+                .load(item.images[0])
+                .into(holder.binding.poster)
+        }
 
         holder.binding.root.setOnClickListener {
-            click(getItem(holder.adapterPosition))
+            click(item)
         }
     }
+
 }

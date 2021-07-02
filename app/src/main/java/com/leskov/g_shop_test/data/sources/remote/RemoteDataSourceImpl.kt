@@ -30,7 +30,7 @@ class RemoteDataSourceImpl(private val retrofit: Retrofit) : RemoteDataSource {
                             id = document.id,
                             title = document["title"].toString(),
                             description = document["description"].toString(),
-                            price = document["price"].toString(),
+                            price = document["price"].toString() + " $",
                             images = document["images"] as? List<String> ?: listOf()
                         )
                     )
@@ -51,7 +51,7 @@ class RemoteDataSourceImpl(private val retrofit: Retrofit) : RemoteDataSource {
                     id = result.id,
                     title = result["title"].toString(),
                     description = result["description"].toString(),
-                    price = result["price"].toString(),
+                    price = result["price"].toString() + " $",
                     images = result["images"] as? List<String> ?: listOf()
                 )
                 it.onSuccess(product)
@@ -75,7 +75,7 @@ class RemoteDataSourceImpl(private val retrofit: Retrofit) : RemoteDataSource {
 
     override fun uploadImages(images: List<Uri>): Single<List<String>> {
         val storage: FirebaseStorage =
-            FirebaseStorage.getInstance("gs://g-shop-535f9.appspot.com")
+            FirebaseStorage.getInstance("gs://g-shop-test.appspot.com")
         val basePath = "image"
         val userFolder = FirebaseAuth.getInstance().currentUser?.uid!!
 
@@ -128,9 +128,9 @@ class RemoteDataSourceImpl(private val retrofit: Retrofit) : RemoteDataSource {
                 val userData = UserEntity(
                     name = document["name"].toString(),
                     surName = document["surName"].toString(),
-                    phoneNumber = document["number"].toString(),
+                    phoneNumber = document["phoneNumber"].toString(),
                     city = document["city"].toString(),
-                    description = document["document"].toString()
+                    description = document["userDescription"].toString()
                 )
                 emitter.onSuccess(userData)
             }

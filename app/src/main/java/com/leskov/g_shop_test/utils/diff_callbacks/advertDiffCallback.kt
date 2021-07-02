@@ -8,7 +8,7 @@ import com.leskov.g_shop_test.domain.responses.AdvertResponse
  *  Developer: Sergey Leskov
  */
 
-val shopDiffCallback = object : DiffUtil.ItemCallback<AdvertResponse>() {
+val advertDiffCallback = object : DiffUtil.ItemCallback<AdvertResponse>() {
     override fun areItemsTheSame(oldItem: AdvertResponse, newItem: AdvertResponse): Boolean =
         oldItem == newItem
 

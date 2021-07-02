@@ -27,6 +27,36 @@
                 app:title="@string/home" />
         </com.google.android.material.appbar.AppBarLayout>
 
+        <TextView
+            android:id="@+id/no_adverts"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:textSize="24sp"
+            android:fontFamily="@font/roboto_light"
+            android:text="@string/no_adverts"
+            app:layout_constraintVertical_bias="0.15"
+            app:layout_constraintTop_toBottomOf="@id/toolbar_layout"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+        <ImageView
+            android:id="@+id/list_is_empty"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:contentDescription="@null"
+            app:layout_constraintTop_toBottomOf="@id/toolbar_layout"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:src="@drawable/ic_guitar"/>
+
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipe"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toBottomOf="@id/toolbar_layout"
+            app:layout_constraintBottom_toBottomOf="parent">
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/list"
             android:layout_width="match_parent"
@@ -35,6 +65,9 @@
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/toolbar_layout" />
+
+
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab"

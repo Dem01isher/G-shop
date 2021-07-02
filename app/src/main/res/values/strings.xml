@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">G-shop-test</string>
+    <string name="app_name">G-shop</string>
     <string name="login">Login</string>
     <string name="registration">Registration</string>
     <string name="email">Email</string>
@@ -37,4 +37,14 @@
     <string name="your_adverts">Your Adverts</string>
     <string name="about_yourself">About Yourself</string>
     <string name="save">Save</string>
+
+    <string name="firebase_auth_invalid_user_exception">"Користувач не існує або був видалений "</string>
+    <string name="firebase_auth_invalid_credentials_exception">"Неправильний пароль або користувач не має пароля "</string>
+    <string name="user_exists_error_msg">"Користувач з таким номером вже існує "</string>
+    <string name="slow_internet">"Не стабільне з'єднання "</string>
+    <string name="no_internet_connection">"Немає з'єднання "</string>
+    <string name="no_internet_or_slow">З\'єднання не стабільне або відсутнє</string>
+    <string name="internet_connection_error">"Немає з'єднання "</string>
+    <string name="log_out">Log out</string>
+    <string name="no_adverts">No Adverts</string>
 </resources>

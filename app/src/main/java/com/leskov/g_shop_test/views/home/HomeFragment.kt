@@ -4,10 +4,10 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.os.bundleOf
 import androidx.navigation.fragment.findNavController
-import com.leskov.g_shop.core.extensions.nonNullObserve
-import com.leskov.g_shop.core.extensions.setOnClickWithDebounce
+import com.leskov.g_shop.core.extensions.*
 import com.leskov.g_shop_test.core.fragment.BaseVMFragment
 import com.leskov.g_shop_test.R
+import com.leskov.g_shop_test.core.state.BaseState
 import com.leskov.g_shop_test.databinding.FragmentHomeBinding
 import kotlin.reflect.KClass
 
@@ -26,6 +26,8 @@ class HomeFragment : BaseVMFragment<HomeViewModel, FragmentHomeBinding>() {
             )
     }
 
+    //private val adapter = HomeAdapter()
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.list.adapter = adapter
@@ -43,6 +45,11 @@ class HomeFragment : BaseVMFragment<HomeViewModel, FragmentHomeBinding>() {
             true
         }
 
+        binding.swipe.setOnRefreshListener {
+            binding.swipe.showRefresh()
+            viewModel.getAdverts()
+        }
+
         binding.fab.setOnClickWithDebounce {
             navController.navigate(R.id.action_homeFragment_to_createAdvertFragment)
         }
@@ -50,7 +57,14 @@ class HomeFragment : BaseVMFragment<HomeViewModel, FragmentHomeBinding>() {
 
     private fun initObservers() {
         viewModel.products.nonNullObserve(viewLifecycleOwner) {
-            adapter.submitList(it)
+            if (it.isNotEmpty()){
+                adapter.submitList(it)
+                binding.listIsEmpty.invisible()
+                binding.noAdverts.invisible()
+                binding.swipe.hideRefresh()
+            } else {
+                binding.swipe.hideRefresh()
+            }
         }
     }
 }
