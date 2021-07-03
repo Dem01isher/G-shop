@@ -10,8 +10,10 @@ import io.reactivex.Single
  */
 
 interface UserRepository {
-    fun createUser(user : UserEntity) : Completable
-    fun getUser() : Single<UserEntity>
+    fun createUser(user: UserEntity): Completable
+    fun getUser(): Single<UserEntity>
+    fun loginUser(email: String, password: String) : Completable
+    fun registerUser(email: String, password: String): Completable
     fun updateUser(
         name: String,
         surName: String,

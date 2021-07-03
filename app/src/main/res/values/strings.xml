@@ -47,4 +47,6 @@
     <string name="internet_connection_error">"Немає з'єднання "</string>
     <string name="log_out">Log out</string>
     <string name="no_adverts">No Adverts</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete">Delete</string>
 </resources>

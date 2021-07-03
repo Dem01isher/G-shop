@@ -8,17 +8,21 @@ import io.reactivex.Single
 
 interface RemoteDataSource {
 
-    fun getAdverts() : Single<List<AdvertResponse>>
+    fun getAdverts(): Single<List<AdvertResponse>>
 
-    fun getAdvertById(id : String) : Single<AdvertResponse>
+    fun getAdvertById(id: String): Single<AdvertResponse>
 
-    fun createAdvert(advert : AdvertResponse) : Completable
+    fun createAdvert(advert: AdvertResponse): Completable
 
     fun uploadImages(images: List<Uri>): Single<List<String>>
 
-    fun createUser(user : UserEntity) : Completable
+    fun createUser(user: UserEntity): Completable
 
-    fun getUser() : Single<UserEntity>
+    fun getUser(): Single<UserEntity>
+
+    fun loginUser(email: String, password: String): Completable
+
+    fun registerUser(email: String, password: String): Completable
 
     fun updateProfile(
         name: String,

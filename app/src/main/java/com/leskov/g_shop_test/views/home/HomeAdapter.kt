@@ -41,7 +41,7 @@ class HomeAdapter(
 
         holder.binding.advert = item
 
-        if (item.images.size == 0) {
+        if (item.images.isEmpty()) {
             Glide.with(holder.itemView.context)
                 .load(R.drawable.ic_guitaricon)
                 .into(holder.binding.poster)

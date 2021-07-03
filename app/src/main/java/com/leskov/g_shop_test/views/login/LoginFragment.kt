@@ -6,10 +6,9 @@ import android.view.View
 import com.google.firebase.auth.FirebaseAuth
 import com.leskov.g_shop.core.extensions.disable
 import com.leskov.g_shop.core.extensions.setOnClickWithDebounce
+import com.leskov.g_shop_test.R
 import com.leskov.g_shop_test.core.fragment.BaseVMFragment
 import com.leskov.g_shop_test.core.input_filters.PASSWORD_PATTERN
-import com.leskov.g_shop.views.login.LoginViewModel
-import com.leskov.g_shop_test.R
 import com.leskov.g_shop_test.databinding.FragmentLoginBinding
 import kotlin.reflect.KClass
 
@@ -22,7 +21,7 @@ class LoginFragment : BaseVMFragment<LoginViewModel, FragmentLoginBinding>() {
     override val viewModelClass: KClass<LoginViewModel>
         get() = LoginViewModel::class
 
-    private lateinit var auth : FirebaseAuth
+    private lateinit var auth: FirebaseAuth
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -56,19 +55,21 @@ class LoginFragment : BaseVMFragment<LoginViewModel, FragmentLoginBinding>() {
             binding.password.error = getString(R.string.empty_password)
             showMessage(R.string.complete_fields)
             return
+        } else if (binding.email.text.toString().trim().isNullOrEmpty()) {
+            binding.email.error = getString(R.string.empty_email)
+            showMessage(R.string.complete_fields)
+        } else if (binding.password.text.toString().trim().isNullOrEmpty()) {
+            binding.password.error = getString(R.string.empty_password)
+            showMessage(R.string.complete_fields)
         } else {
-            auth.signInWithEmailAndPassword(binding.email.text.toString(), binding.password.text.toString())
-                .addOnSuccessListener {
-                    binding.email.disable()
-                    binding.password.disable()
-                    showMessage("Success")
-                    navController.navigate(R.id.action_loginFragment_to_homeFragment)
-                }
-                .addOnFailureListener {
-                    binding.email.error = getString(R.string.invalid_email)
-                    binding.password.error = getString(R.string.invalid_password)
-                    showMessage(R.string.invalid_email_or_password)
-                }
+            viewModel.loginUser(
+                binding.email.text.toString().trim(),
+                binding.password.text.toString().trim()
+            )
+            binding.email.disable()
+            binding.password.disable()
+            showMessage("Success")
+            navController.navigate(R.id.action_loginFragment_to_homeFragment)
         }
     }
 }

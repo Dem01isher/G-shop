@@ -7,7 +7,6 @@ import androidx.navigation.fragment.findNavController
 import com.leskov.g_shop.core.extensions.*
 import com.leskov.g_shop_test.core.fragment.BaseVMFragment
 import com.leskov.g_shop_test.R
-import com.leskov.g_shop_test.core.state.BaseState
 import com.leskov.g_shop_test.databinding.FragmentHomeBinding
 import kotlin.reflect.KClass
 
@@ -59,11 +58,11 @@ class HomeFragment : BaseVMFragment<HomeViewModel, FragmentHomeBinding>() {
         viewModel.products.nonNullObserve(viewLifecycleOwner) {
             if (it.isNotEmpty()){
                 adapter.submitList(it)
-                binding.listIsEmpty.invisible()
-                binding.noAdverts.invisible()
                 binding.swipe.hideRefresh()
+                binding.progressBar.invisible()
             } else {
-                binding.swipe.hideRefresh()
+                binding.listIsEmpty.visible()
+                binding.noAdverts.visible()
             }
         }
     }

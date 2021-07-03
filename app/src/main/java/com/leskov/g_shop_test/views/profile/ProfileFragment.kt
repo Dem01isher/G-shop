@@ -66,4 +66,9 @@ class ProfileFragment : BaseVMFragment<ProfileViewModel, FragmentProfileBinding>
             Glide.with(this).load(user?.photoUrl).transform(CircleCrop()).into(binding.userImage)
         }
     }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.getUser()
+    }
 }

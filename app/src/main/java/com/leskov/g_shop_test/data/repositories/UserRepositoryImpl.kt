@@ -16,6 +16,12 @@ class UserRepositoryImpl(private val remoteDataSource: RemoteDataSource) : UserR
 
     override fun getUser(): Single<UserEntity> = remoteDataSource.getUser()
 
+    override fun loginUser(email: String, password: String): Completable =
+        remoteDataSource.loginUser(email, password)
+
+    override fun registerUser(email: String, password: String): Completable =
+        remoteDataSource.registerUser(email, password)
+
     override fun updateUser(
         name: String,
         surName: String,

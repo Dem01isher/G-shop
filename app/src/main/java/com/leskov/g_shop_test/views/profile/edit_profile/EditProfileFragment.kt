@@ -8,6 +8,7 @@ import com.leskov.g_shop.core.extensions.setOnClickWithDebounce
 import com.leskov.g_shop_test.core.fragment.BaseVMFragment
 import com.leskov.g_shop_test.R
 import com.leskov.g_shop_test.databinding.FragmentEditProfileBinding
+import com.leskov.g_shop_test.views.dialogs.DeleteAccountDialog
 import kotlin.reflect.KClass
 
 
@@ -44,7 +45,9 @@ class EditProfileFragment : BaseVMFragment<EditProfileViewModel, FragmentEditPro
         }
         binding.toolbar.setOnMenuItemClickListener {
             when (it.itemId){
-                //R.id.delete_user ->
+                R.id.delete_user -> DeleteAccountDialog{
+
+                }.show(parentFragmentManager, "")
             }
             true
         }

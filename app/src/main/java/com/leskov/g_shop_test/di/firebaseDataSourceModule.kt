@@ -3,7 +3,7 @@ package com.leskov.g_shop_test.di
 
 import com.google.gson.*
 import com.leskov.g_shop_test.data.sources.remote.RemoteDataSource
-import com.leskov.g_shop.data.sources.remote.RemoteDataSourceImpl
+import com.leskov.g_shop_test.data.sources.remote.RemoteDataSourceImpl
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.dsl.module

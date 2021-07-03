@@ -37,6 +37,7 @@ class RegistrationDataFragment :
             binding.phoneNumber.setText(auth.currentUser?.phoneNumber)
         }
 
+        initObservers()
         initListeners()
     }
 
@@ -50,9 +51,9 @@ class RegistrationDataFragment :
 
     private fun registerUser() {
         if (binding.name.text.isNullOrEmpty()
-            && binding.surname.text.isNullOrEmpty()
-            && binding.city.text.isNullOrEmpty()
-            && binding.phoneNumber.text.isNullOrEmpty()) {
+            || binding.surname.text.isNullOrEmpty()
+            || binding.city.text.isNullOrEmpty()
+            || binding.phoneNumber.text.isNullOrEmpty()) {
             binding.name.error = ""
             binding.surname.error = ""
             binding.city.error = ""
@@ -60,22 +61,26 @@ class RegistrationDataFragment :
             showMessage(R.string.complete_fields)
             return
         } else {
+            viewModel.createUser(
+                UserEntity(
+                    binding.name.text.toString(),
+                    binding.surname.text.toString(),
+                    binding.city.text.toString(),
+                    binding.phoneNumber.text.toString(),
+                    ""
+                )
+            )
             binding.name.disable()
             binding.surname.disable()
             binding.city.disable()
             binding.phoneNumber.disable()
-            viewModel.createUser(
-                UserEntity(
-                binding.name.text.toString(),
-                binding.surname.text.toString(),
-                binding.city.text.toString(),
-                binding.phoneNumber.text.toString(),
-                ""
-            )
-            )
-            viewModel.user.nonNullObserve(viewLifecycleOwner){
-                navController.navigate(R.id.action_registrationDataFragment_to_homeFragment)
-            }
+
+        }
+    }
+
+    private fun initObservers(){
+        viewModel.user.nonNullObserve(viewLifecycleOwner){
+            navController.navigate(R.id.action_registrationDataFragment_to_homeFragment)
         }
     }
 

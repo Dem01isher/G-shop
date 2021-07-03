@@ -1,11 +1,10 @@
-package com.leskov.g_shop.data.sources.remote
+package com.leskov.g_shop_test.data.sources.remote
 
 import android.net.Uri
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
-import com.leskov.g_shop_test.data.sources.remote.RemoteDataSource
 import com.leskov.g_shop_test.domain.entitys.UserEntity
 import com.leskov.g_shop_test.domain.responses.AdvertResponse
 import io.reactivex.Completable
@@ -18,6 +17,7 @@ import java.util.*
 class RemoteDataSourceImpl(private val retrofit: Retrofit) : RemoteDataSource {
 
     private val db = FirebaseFirestore.getInstance()
+    private val auth = FirebaseAuth.getInstance()
 
     override fun getAdverts(): Single<List<AdvertResponse>> = Single.create {
         db.collection("adverts")
@@ -108,7 +108,7 @@ class RemoteDataSourceImpl(private val retrofit: Retrofit) : RemoteDataSource {
             .toList()
     }
 
-    override fun createUser(user: UserEntity): Completable = Completable.create{ emitter ->
+    override fun createUser(user: UserEntity): Completable = Completable.create { emitter ->
         db.collection("users")
             .document(FirebaseAuth.getInstance().currentUser?.uid ?: "")
             .set(user)
@@ -120,7 +120,7 @@ class RemoteDataSourceImpl(private val retrofit: Retrofit) : RemoteDataSource {
             }
     }
 
-    override fun getUser(): Single<UserEntity> = Single.create{ emitter ->
+    override fun getUser(): Single<UserEntity> = Single.create { emitter ->
         db.collection("users")
             .document(FirebaseAuth.getInstance().currentUser?.uid ?: "")
             .get()
@@ -133,6 +133,26 @@ class RemoteDataSourceImpl(private val retrofit: Retrofit) : RemoteDataSource {
                     description = document["userDescription"].toString()
                 )
                 emitter.onSuccess(userData)
+            }
+            .addOnFailureListener {
+                emitter.onError(it)
+            }
+    }
+
+    override fun loginUser(email: String, password: String): Completable = Completable.create { emiter ->
+        auth.signInWithEmailAndPassword(email, password)
+            .addOnSuccessListener {
+                emiter.onComplete()
+            }
+            .addOnFailureListener {
+                emiter.onError(it)
+            }
+    }
+
+    override fun registerUser(email: String, password: String): Completable = Completable.create { emitter ->
+        auth.createUserWithEmailAndPassword(email, password)
+            .addOnSuccessListener {
+                emitter.onComplete()
             }
             .addOnFailureListener {
                 emitter.onError(it)
