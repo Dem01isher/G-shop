@@ -1,5 +1,6 @@
 package com.leskov.g_shop_test.domain.repositories
 
+import com.google.firebase.auth.FirebaseUser
 import com.leskov.g_shop_test.domain.entitys.UserEntity
 import io.reactivex.Completable
 import io.reactivex.Single
@@ -10,10 +11,15 @@ import io.reactivex.Single
  */
 
 interface UserRepository {
+
     fun createUser(user: UserEntity): Completable
+
     fun getUser(): Single<UserEntity>
-    fun loginUser(email: String, password: String) : Completable
+
+    fun loginUser(email: String, password: String): Completable
+
     fun registerUser(email: String, password: String): Completable
+
     fun updateUser(
         name: String,
         surName: String,
@@ -22,4 +28,8 @@ interface UserRepository {
         phoneNumber: String,
         userDescription: String
     ): Completable
+
+    fun getCurrentUser() : FirebaseUser?
+
+    fun logout()
 }

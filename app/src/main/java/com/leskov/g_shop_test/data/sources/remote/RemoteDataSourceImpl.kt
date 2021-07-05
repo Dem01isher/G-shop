@@ -1,7 +1,9 @@
 package com.leskov.g_shop_test.data.sources.remote
 
 import android.net.Uri
+import androidx.lifecycle.MutableLiveData
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
@@ -14,10 +16,16 @@ import io.reactivex.schedulers.Schedulers
 import retrofit2.Retrofit
 import java.util.*
 
+
 class RemoteDataSourceImpl(private val retrofit: Retrofit) : RemoteDataSource {
 
-    private val db = FirebaseFirestore.getInstance()
-    private val auth = FirebaseAuth.getInstance()
+    private val db : FirebaseFirestore by lazy {
+        FirebaseFirestore.getInstance()
+    }
+    private val auth : FirebaseAuth by lazy {
+        FirebaseAuth.getInstance()
+    }
+    private val userLiveData = MutableLiveData<FirebaseUser>()
 
     override fun getAdverts(): Single<List<AdvertResponse>> = Single.create {
         db.collection("adverts")
@@ -139,25 +147,47 @@ class RemoteDataSourceImpl(private val retrofit: Retrofit) : RemoteDataSource {
             }
     }
 
-    override fun loginUser(email: String, password: String): Completable = Completable.create { emiter ->
+    override fun loginUser(email: String, password: String): Completable = Completable.create { emitter ->
         auth.signInWithEmailAndPassword(email, password)
-            .addOnSuccessListener {
-                emiter.onComplete()
+            .addOnCompleteListener {
+                if (!emitter.isDisposed){
+                    if (it.isSuccessful){
+                        userLiveData.postValue(auth.currentUser)
+                        emitter.onComplete()
+                    }else{
+                        emitter.onError(it.exception!!)
+                    }
+                }
             }
-            .addOnFailureListener {
-                emiter.onError(it)
-            }
+//            .addOnFailureListener {
+//                if (emitter.isDisposed){
+//                    emitter.onError(it)
+//                }
+//            }
     }
 
     override fun registerUser(email: String, password: String): Completable = Completable.create { emitter ->
         auth.createUserWithEmailAndPassword(email, password)
-            .addOnSuccessListener {
-                emitter.onComplete()
+            .addOnCompleteListener {
+                if (!emitter.isDisposed){
+                    if (it.isSuccessful){
+                        userLiveData.postValue(auth.currentUser)
+                        emitter.onComplete()
+                    }else{
+                        emitter.onError(it.exception!!)
+                    }
+                }
             }
-            .addOnFailureListener {
-                emitter.onError(it)
-            }
+//            .addOnFailureListener {
+//                if (emitter.isDisposed){
+//                    emitter.onError(it)
+//                }
+//            }
     }
+
+    override fun getCurrentUser(): FirebaseUser? = auth.currentUser
+
+    override fun logout() = auth.signOut()
 
     override fun updateProfile(
         name: String,

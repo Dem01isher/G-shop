@@ -15,6 +15,7 @@ import io.reactivex.schedulers.Schedulers
  */
 
 class ProfileViewModel(private val repository: UserRepository) : BaseViewModel() {
+
     private val _user = MutableLiveData<UserEntity>()
     val user : LiveData<UserEntity> = _user
 
@@ -34,5 +35,9 @@ class ProfileViewModel(private val repository: UserRepository) : BaseViewModel()
                     timber.log.Timber.d(it)
                 }
             )
+    }
+
+    fun logout(){
+        repository.logout()
     }
 }

@@ -1,6 +1,7 @@
 package com.leskov.g_shop_test.data.sources.remote
 
 import android.net.Uri
+import com.google.firebase.auth.FirebaseUser
 import com.leskov.g_shop_test.domain.entitys.UserEntity
 import com.leskov.g_shop_test.domain.responses.AdvertResponse
 import io.reactivex.Completable
@@ -32,4 +33,8 @@ interface RemoteDataSource {
         phoneNumber: String,
         userDescription: String
     ): Completable
+
+    fun getCurrentUser() : FirebaseUser?
+
+    fun logout()
 }

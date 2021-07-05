@@ -9,12 +9,12 @@ import com.leskov.g_shop.core.extensions.setOnClickWithDebounce
 import com.leskov.g_shop_test.core.fragment.BaseVMFragment
 import com.leskov.g_shop_test.R
 import com.leskov.g_shop_test.databinding.FragmentRegistationDataBinding
-import com.leskov.g_shop_test.domain.entitys.UserEntity
+import com.leskov.g_shop_test.utils.listeners.FirebaseAuthListener
 import kotlin.reflect.KClass
 
 
 class RegistrationDataFragment :
-    BaseVMFragment<RegistrationDataViewModel, FragmentRegistationDataBinding>() {
+    BaseVMFragment<RegistrationDataViewModel, FragmentRegistationDataBinding>(), FirebaseAuthListener {
 
     override val layoutId: Int = R.layout.fragment_registation_data
 
@@ -24,6 +24,8 @@ class RegistrationDataFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        viewModel.authListener = this
 
         auth = FirebaseAuth.getInstance()
 
@@ -36,52 +38,43 @@ class RegistrationDataFragment :
         {
             binding.phoneNumber.setText(auth.currentUser?.phoneNumber)
         }
-
-        initObservers()
         initListeners()
     }
 
     private fun initListeners() {
 
         binding.register.setOnClickWithDebounce {
-            registerUser()
+            viewModel.createUser(binding.name.text.toString(),
+            binding.surname.text.toString(), binding.city.text.toString(),
+            binding.phoneNumber.text.toString(), "")
         }
 
-    }
-
-    private fun registerUser() {
-        if (binding.name.text.isNullOrEmpty()
-            || binding.surname.text.isNullOrEmpty()
-            || binding.city.text.isNullOrEmpty()
-            || binding.phoneNumber.text.isNullOrEmpty()) {
-            binding.name.error = ""
-            binding.surname.error = ""
-            binding.city.error = ""
-            binding.phoneNumber.error = ""
-            showMessage(R.string.complete_fields)
-            return
-        } else {
-            viewModel.createUser(
-                UserEntity(
-                    binding.name.text.toString(),
-                    binding.surname.text.toString(),
-                    binding.city.text.toString(),
-                    binding.phoneNumber.text.toString(),
-                    ""
-                )
-            )
-            binding.name.disable()
-            binding.surname.disable()
-            binding.city.disable()
-            binding.phoneNumber.disable()
-
-        }
     }
 
     private fun initObservers(){
         viewModel.user.nonNullObserve(viewLifecycleOwner){
             navController.navigate(R.id.action_registrationDataFragment_to_homeFragment)
         }
+    }
+
+    override fun onStarted() {
+        showMessage("Success")
+    }
+
+    override fun onSuccess() {
+        binding.nameLayout.disable()
+        binding.surnameLayout.disable()
+        binding.cityLayout.disable()
+        binding.phoneLayout.disable()
+        initObservers()
+    }
+
+    override fun onFailure(message: Int) {
+        binding.name.error = getString(R.string.complete_this_field)
+        binding.surname.error = getString(R.string.complete_this_field)
+        binding.phoneNumber.error = getString(R.string.complete_this_field)
+        binding.city.error = getString(R.string.complete_this_field)
+        showMessage(message)
     }
 
 }

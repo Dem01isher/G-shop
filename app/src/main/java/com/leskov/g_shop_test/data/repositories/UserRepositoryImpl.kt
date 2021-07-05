@@ -1,5 +1,6 @@
 package com.leskov.g_shop_test.data.repositories
 
+import com.google.firebase.auth.FirebaseUser
 import com.leskov.g_shop_test.data.sources.remote.RemoteDataSource
 import com.leskov.g_shop_test.domain.entitys.UserEntity
 import com.leskov.g_shop_test.domain.repositories.UserRepository
@@ -32,4 +33,7 @@ class UserRepositoryImpl(private val remoteDataSource: RemoteDataSource) : UserR
     ): Completable =
         remoteDataSource.updateProfile(name, surName, city, email, phoneNumber, userDescription)
 
+    override fun getCurrentUser(): FirebaseUser? = remoteDataSource.getCurrentUser()
+
+    override fun logout() = remoteDataSource.logout()
 }

@@ -63,8 +63,8 @@ class CreateAdvertFragment : BaseVMFragment<CreateAdvertViewModel, FragmentCreat
 
     private fun createAdvert() {
         if (binding.price.text.toString().isEmpty()
-            && binding.description.text.toString().isEmpty()
-            && binding.headline.text.toString().isEmpty()){
+            || binding.description.text.toString().isEmpty()
+            || binding.headline.text.toString().isEmpty()){
             binding.headlineLayout.error = getString(R.string.set_headline)
             binding.descriptionLayout.error = getString(R.string.set_description)
             binding.priceLayout.error = getString(R.string.set_price)

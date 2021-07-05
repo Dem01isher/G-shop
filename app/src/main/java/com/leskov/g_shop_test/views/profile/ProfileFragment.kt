@@ -33,7 +33,7 @@ class ProfileFragment : BaseVMFragment<ProfileViewModel, FragmentProfileBinding>
     private fun initListeners() {
 
         binding.logout.setOnClickWithDebounce {
-            auth.signOut()
+            viewModel.logout()
             navController.navigate(R.id.action_profileFragment_to_loginFragment)
         }
 
