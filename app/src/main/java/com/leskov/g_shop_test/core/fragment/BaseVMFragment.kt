@@ -3,7 +3,7 @@ package com.leskov.g_shop_test.core.fragment
 import android.os.Bundle
 import android.view.View
 import androidx.databinding.ViewDataBinding
-import com.leskov.g_shop.core.extensions.eventObserve
+import com.leskov.g_shop_test.core.extensions.eventObserve
 import com.leskov.g_shop_test.core.view_model.BaseViewModel
 import org.koin.androidx.viewmodel.ext.android.getViewModel
 import kotlin.reflect.KClass

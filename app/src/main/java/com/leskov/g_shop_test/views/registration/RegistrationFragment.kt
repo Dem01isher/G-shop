@@ -4,7 +4,9 @@ import android.os.Bundle
 import android.view.View
 import com.google.firebase.auth.FirebaseAuth
 import com.leskov.g_shop.core.extensions.disable
+import com.leskov.g_shop.core.extensions.gone
 import com.leskov.g_shop.core.extensions.setOnClickWithDebounce
+import com.leskov.g_shop.core.extensions.visible
 import com.leskov.g_shop_test.R
 import com.leskov.g_shop_test.core.fragment.BaseVMFragment
 import com.leskov.g_shop_test.databinding.FragmentRegistrationBinding
@@ -73,16 +75,19 @@ class RegistrationFragment : BaseVMFragment<RegistrationViewModel, FragmentRegis
 //    }
 
     override fun onStarted() {
+        binding.progressBar.visible()
         binding.email.disable()
         binding.password.disable()
     }
 
     override fun onSuccess() {
+        binding.progressBar.gone()
         showMessage("Successful")
         navController.navigate(R.id.action_registrationFragment_to_registrationDataFragment)
     }
 
     override fun onFailure(message: Int) {
+        binding.progressBar.gone()
         binding.email.error = getString(R.string.empty_email)
         binding.password.error = getString(R.string.empty_password)
         showMessage(message)

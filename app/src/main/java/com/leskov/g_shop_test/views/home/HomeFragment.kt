@@ -7,6 +7,7 @@ import androidx.navigation.fragment.findNavController
 import com.leskov.g_shop.core.extensions.*
 import com.leskov.g_shop_test.core.fragment.BaseVMFragment
 import com.leskov.g_shop_test.R
+import com.leskov.g_shop_test.core.extensions.nonNullObserve
 import com.leskov.g_shop_test.databinding.FragmentHomeBinding
 import kotlin.reflect.KClass
 

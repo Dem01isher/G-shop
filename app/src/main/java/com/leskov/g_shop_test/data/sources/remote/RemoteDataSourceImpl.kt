@@ -1,6 +1,7 @@
 package com.leskov.g_shop_test.data.sources.remote
 
 import android.net.Uri
+import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -19,10 +20,10 @@ import java.util.*
 
 class RemoteDataSourceImpl(private val retrofit: Retrofit) : RemoteDataSource {
 
-    private val db : FirebaseFirestore by lazy {
+    private val db: FirebaseFirestore by lazy {
         FirebaseFirestore.getInstance()
     }
-    private val auth : FirebaseAuth by lazy {
+    private val auth: FirebaseAuth by lazy {
         FirebaseAuth.getInstance()
     }
     private val userLiveData = MutableLiveData<FirebaseUser>()
@@ -147,43 +148,42 @@ class RemoteDataSourceImpl(private val retrofit: Retrofit) : RemoteDataSource {
             }
     }
 
-    override fun loginUser(email: String, password: String): Completable = Completable.create { emitter ->
-        auth.signInWithEmailAndPassword(email, password)
-            .addOnCompleteListener {
-                if (!emitter.isDisposed){
-                    if (it.isSuccessful){
-                        userLiveData.postValue(auth.currentUser)
-                        emitter.onComplete()
-                    }else{
-                        emitter.onError(it.exception!!)
+    override fun loginUser(email: String, password: String): Completable =
+        Completable.create { emitter ->
+            auth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener {
+                    if (!emitter.isDisposed) {
+                        if (it.isSuccessful)
+                            emitter.onComplete()
+                        else
+                            emitter.onError(it.exception!!)
                     }
                 }
-            }
 //            .addOnFailureListener {
 //                if (emitter.isDisposed){
 //                    emitter.onError(it)
 //                }
 //            }
-    }
+        }
 
-    override fun registerUser(email: String, password: String): Completable = Completable.create { emitter ->
-        auth.createUserWithEmailAndPassword(email, password)
-            .addOnCompleteListener {
-                if (!emitter.isDisposed){
-                    if (it.isSuccessful){
-                        userLiveData.postValue(auth.currentUser)
+    override fun registerUser(email: String, password: String): Completable =
+        Completable.create { emitter ->
+            auth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener {
+                    if (it.isSuccessful) {
+                        //userLiveData.postValue(auth.currentUser)
                         emitter.onComplete()
-                    }else{
+                    } else {
                         emitter.onError(it.exception!!)
                     }
                 }
-            }
+
 //            .addOnFailureListener {
 //                if (emitter.isDisposed){
 //                    emitter.onError(it)
 //                }
 //            }
-    }
+        }
 
     override fun getCurrentUser(): FirebaseUser? = auth.currentUser
 

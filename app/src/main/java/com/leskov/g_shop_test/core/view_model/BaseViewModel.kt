@@ -16,8 +16,10 @@ import com.leskov.g_shop_test.core.event.EventMutableLiveData
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.exceptions.UndeliverableException
+import kotlinx.coroutines.CoroutineDispatcher
 import retrofit2.adapter.rxjava2.HttpException
 import timber.log.Timber
+import java.lang.NumberFormatException
 import java.net.ConnectException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
@@ -34,7 +36,6 @@ open class BaseViewModel : ViewModel() {
 
     private val _navigate = EventMutableLiveData<@IdRes Int>()
     val navigate: EventLiveData<Int> = _navigate
-
 
     private var initProgress = true
 

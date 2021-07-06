@@ -5,7 +5,7 @@ import android.view.View
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.google.firebase.auth.FirebaseAuth
-import com.leskov.g_shop.core.extensions.nonNullObserve
+import com.leskov.g_shop_test.core.extensions.nonNullObserve
 import com.leskov.g_shop.core.extensions.setOnClickWithDebounce
 import com.leskov.g_shop_test.core.fragment.BaseVMFragment
 import com.leskov.g_shop_test.R

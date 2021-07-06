@@ -1,39 +1,68 @@
 package com.leskov.g_shop_test.views.login
 
 import android.os.Bundle
+import android.text.TextUtils
+import android.util.Patterns
 import android.view.View
-import com.google.firebase.auth.FirebaseAuth
-import com.leskov.g_shop.core.extensions.disable
-import com.leskov.g_shop.core.extensions.nonNullObserve
+import android.widget.Toast
+import androidx.lifecycle.ViewModelProvider
+import com.leskov.g_shop.core.extensions.gone
 import com.leskov.g_shop.core.extensions.setOnClickWithDebounce
+import com.leskov.g_shop.core.extensions.visible
 import com.leskov.g_shop_test.R
+import com.leskov.g_shop_test.core.fragment.BaseBindingFragment
 import com.leskov.g_shop_test.core.fragment.BaseVMFragment
 import com.leskov.g_shop_test.databinding.FragmentLoginBinding
-import com.leskov.g_shop_test.utils.listeners.FirebaseAuthListener
+import com.leskov.g_shop_test.domain.entitys.ResultOf
 import kotlin.reflect.KClass
 
 
-class LoginFragment : BaseVMFragment<LoginViewModel, FragmentLoginBinding>(), FirebaseAuthListener {
+class LoginFragment : BaseVMFragment<LoginViewModel ,FragmentLoginBinding>() {
 
     override val layoutId: Int
         get() = R.layout.fragment_login
 
-    override val viewModelClass: KClass<LoginViewModel>
-        get() = LoginViewModel::class
-
-    private lateinit var auth: FirebaseAuth
+    override val viewModelClass: KClass<LoginViewModel> = LoginViewModel::class
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.authListener = this
-
-        auth = FirebaseAuth.getInstance()
+        observerLoadingProgress()
 
         initListeners()
     }
 
     private fun initListeners() {
+
+        binding.login.setOnClickWithDebounce {
+            if (TextUtils.isEmpty(binding.email.text.toString()) && TextUtils.isEmpty(binding.password.text.toString())){
+                binding.emailLayout.error = getString(R.string.empty_email)
+                binding.passwordLayout.error = getString(R.string.empty_password)
+                showMessage("Login fields can't be empty")
+                return@setOnClickWithDebounce
+            }
+            else if (TextUtils.isEmpty(binding.email.text.toString()) || !Patterns.EMAIL_ADDRESS.matcher(binding.email.text.toString()).matches()){
+                binding.emailLayout.error = getString(R.string.empty_email)
+                binding.passwordLayout.error = null
+                showMessage(R.string.empty_email)
+                return@setOnClickWithDebounce
+            }
+            else if (TextUtils.isEmpty(binding.password.text.toString()) || binding.password.text!!.length < 2){
+                binding.emailLayout.error = null
+                binding.passwordLayout.error = getString(R.string.empty_password)
+                showMessage(R.string.empty_password)
+                return@setOnClickWithDebounce
+            }
+            else {
+                viewModel.signIn(
+                    binding.email.text.toString(),
+                    binding.password.text.toString()
+                )
+                binding.emailLayout.error = null
+                binding.passwordLayout.error = null
+                observeSignIn()
+            }
+        }
 
         binding.toolbar.setOnMenuItemClickListener {
             when (it.itemId) {
@@ -41,54 +70,44 @@ class LoginFragment : BaseVMFragment<LoginViewModel, FragmentLoginBinding>(), Fi
             }
             true
         }
+    }
 
-        binding.login.setOnClickWithDebounce {
-            viewModel.loginUser(
-                binding.email.text.toString().trim(),
-                binding.password.text.toString().trim()
-            )
+    private fun observeSignIn() {
+        viewModel.signInStatus.observe(viewLifecycleOwner) { result ->
+            result?.let {
+                when (it) {
+                    is ResultOf.Success -> {
+                        if (it.value.equals("Login Successful", ignoreCase = true)) {
+                            showMessage("Login Successful")
+                            viewModel.resetSignInLiveData()
+                            navController.navigate(R.id.action_loginFragment_to_homeFragment)
+                        } else if (it.value.equals("Reset", ignoreCase = true)) {
+                            binding.email.text = null
+                            binding.password.text = null
+                        } else {
+                            showMessage("Login failed with ${it.value}")
+                            binding.emailLayout.error = getString(R.string.invalid_email)
+                            binding.passwordLayout.error = getString(R.string.invalid_password)
+                        }
+                    }
+                    is ResultOf.Failure -> {
+                        val failedMessage = it.message ?: "Unknown Error"
+                        showMessage("Login failed with $failedMessage")
+                    }
+                }
+            }
         }
     }
 
-//    private fun loginUser() {
-//        if (binding.email.text.toString().trim().isNullOrEmpty()
-//            && binding.password.text.toString().trim().isNullOrEmpty()
-//            && !Patterns.EMAIL_ADDRESS.matcher(binding.email.text.toString().trim()).matches()
-//            && !PASSWORD_PATTERN!!.matcher(binding.password.text.toString().trim()).matches()
-//        ) {
-//
-//            showMessage(R.string.complete_fields)
-//            return
-//        } else if (binding.email.text.toString().trim().isNullOrEmpty()) {
-//            binding.email.error = getString(R.string.empty_email)
-//            showMessage(R.string.complete_fields)
-//            return
-//        } else if (binding.password.text.toString().trim().isNullOrEmpty()) {
-//            binding.password.error = getString(R.string.empty_password)
-//            showMessage(R.string.complete_fields)
-//            return
-//        }
-//    }
+    private fun observerLoadingProgress() {
+        viewModel.fetchLoading().observe(viewLifecycleOwner) {
+            if (!it) {
+                println(it)
+                binding.progressBar.gone()
+            } else {
+                binding.progressBar.visible()
+            }
 
-    private fun initObservers(){
-        viewModel.user.nonNullObserve(viewLifecycleOwner){
-            navController.navigate(R.id.action_loginFragment_to_homeFragment)
         }
-    }
-
-    override fun onStarted() {
-        showMessage("Success")
-    }
-
-    override fun onSuccess() {
-        binding.email.disable()
-        binding.password.disable()
-        initObservers()
-    }
-
-    override fun onFailure(message: Int) {
-        binding.email.error = getString(R.string.invalid_email)
-        binding.password.error = getString(R.string.invalid_password)
-        showMessage(message)
     }
 }

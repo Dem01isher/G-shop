@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.view.View
 import com.google.firebase.auth.FirebaseAuth
 import com.leskov.g_shop.core.extensions.disable
-import com.leskov.g_shop.core.extensions.nonNullObserve
+import com.leskov.g_shop_test.core.extensions.nonNullObserve
 import com.leskov.g_shop.core.extensions.setOnClickWithDebounce
 import com.leskov.g_shop_test.core.fragment.BaseVMFragment
 import com.leskov.g_shop_test.R

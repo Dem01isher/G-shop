@@ -1,82 +1,74 @@
 package com.leskov.g_shop_test.views.login
 
-import android.util.Patterns
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import com.leskov.g_shop_test.R
-import com.leskov.g_shop_test.core.input_filters.PASSWORD_PATTERN
+import androidx.lifecycle.*
+import com.google.android.gms.tasks.Task
+import com.google.firebase.auth.AuthResult
+import com.google.firebase.auth.FirebaseAuth
 import com.leskov.g_shop_test.core.view_model.BaseViewModel
-import com.leskov.g_shop_test.domain.repositories.UserRepository
-import com.leskov.g_shop_test.utils.listeners.FirebaseAuthListener
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.rxkotlin.subscribeBy
-import io.reactivex.schedulers.Schedulers
-import timber.log.Timber
+import com.leskov.g_shop_test.domain.entitys.ResultOf
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 /**
  *  Created by Android Studio on 6/22/2021 9:16 PM
  *  Developer: Sergey Leskov
  */
 
-class LoginViewModel(private val repository: UserRepository) : BaseViewModel(){
-    private val _user = MutableLiveData<Unit>()
-    val user : LiveData<Unit> = _user
+class LoginViewModel : BaseViewModel() {
 
-    var authListener : FirebaseAuthListener? = null
+    private val auth: FirebaseAuth by lazy {
+        FirebaseAuth.getInstance()
+    }
+    var loading: MutableLiveData<Boolean> = MutableLiveData()
 
-    fun loginUser(email : String, password : String) {
-        //validating email and password
-//        if (email.isNullOrEmpty() && password.isNullOrEmpty()
-//            || !Patterns.EMAIL_ADDRESS.matcher(email).matches()
-//            || !PASSWORD_PATTERN!!.matcher(password).matches()
-//        ) {
-//            authListener?.onFailure(R.string.invalid_email_or_password)
-//            return
-        if (email.isNullOrEmpty() || password.isNullOrEmpty()
-            && !Patterns.EMAIL_ADDRESS.matcher(email).matches()
-            && !PASSWORD_PATTERN?.matcher(password)?.matches()!!){
-            authListener?.onFailure(R.string.invalid_email_or_password)
-            return
-        } else if (email.isNullOrEmpty() || !Patterns.EMAIL_ADDRESS.matcher(email).matches()){
-            authListener?.onFailure(R.string.empty_email)
-            return
-        } else if (password.isNullOrEmpty()){
-            authListener?.onFailure(R.string.empty_password)
-            return
-        }
+    init {
 
-        //authentication started
-        authListener?.onStarted()
-        disposables + repository.loginUser(email, password)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribeBy(
-                onComplete = {
-                    authListener?.onSuccess()
-                    _user.postValue(Unit)
-                },
-                onError = {
-                    Timber.d(it)
-                    authListener?.onFailure(it.parseResponseError().toString().toInt())
+        loading.postValue(false)
+    }
+
+    fun resetSignInLiveData(){
+        _signInStatus.value =  ResultOf.Success("Reset")
+    }
+
+    private val _registrationStatus = MutableLiveData<ResultOf<String>>()
+    val registrationStatus: LiveData<ResultOf<String>> = _registrationStatus
+
+    private val _signInStatus = MutableLiveData<ResultOf<String>>()
+    val signInStatus: LiveData<ResultOf<String>> = _signInStatus
+    fun signIn(email:String, password:String){
+        loading.postValue(true)
+        viewModelScope.launch(Dispatchers.IO){
+            var  errorCode = -1
+            try{
+                auth?.let{ login->
+                    login.signInWithEmailAndPassword(email,password)
+                        .addOnCompleteListener {task: Task<AuthResult> ->
+                            if(!task.isSuccessful){
+                                println("Login Failed with ${task.exception}")
+                                _signInStatus.postValue(ResultOf.Success("Login Failed with ${task.exception}"))
+                            }else{
+                                _signInStatus.postValue(ResultOf.Success("Login Successful"))
+
+                            }
+                            loading.postValue(false)
+                        }
+
                 }
-            )
-    }
-//        //calling login from repository to perform the actual authentication
-//        val disposable = repository.loginUser(email!!, password!!)
-//            .subscribeOn(Schedulers.io())
-//            .observeOn(AndroidSchedulers.mainThread())
-//            .subscribe({
-//                //sending a success callback
-//                authListener?.onSuccess()
-//            }, {
-//                //sending a failure callback
-//                authListener?.onFailure(it.message!!.toInt())
-//            })
-//        disposables.add(disposable)
-//    }
 
-    override fun onCleared() {
-        super.onCleared()
-        disposables.dispose()
+            }catch (e:Exception){
+                e.printStackTrace()
+                loading.postValue(false)
+                if(errorCode != -1){
+                    _registrationStatus.postValue(ResultOf.Failure("Failed with Error Code ${errorCode} ", e))
+                }else{
+                    _registrationStatus.postValue(ResultOf.Failure("Failed with Exception ${e.message}", e))
+                }
+
+
+            }
+        }
     }
+
+    fun fetchLoading():LiveData<Boolean> = loading
+
 }

@@ -1,10 +1,9 @@
 package com.leskov.g_shop_test.views.about_advert
 
-import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import com.bumptech.glide.Glide
-import com.leskov.g_shop.core.extensions.nonNullObserve
+import com.leskov.g_shop_test.core.extensions.nonNullObserve
 import com.leskov.g_shop.views.about_advert.AboutAdvertViewModel
 import com.leskov.g_shop_test.R
 import com.leskov.g_shop_test.core.fragment.BaseVMFragment

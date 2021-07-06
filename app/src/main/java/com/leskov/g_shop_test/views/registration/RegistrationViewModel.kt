@@ -3,6 +3,7 @@ package com.leskov.g_shop_test.views.registration
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.leskov.g_shop_test.R
+import com.leskov.g_shop_test.core.extensions.applyIO
 import com.leskov.g_shop_test.core.view_model.BaseViewModel
 import com.leskov.g_shop_test.domain.repositories.UserRepository
 import com.leskov.g_shop_test.utils.listeners.FirebaseAuthListener
