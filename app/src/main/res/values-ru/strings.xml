@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">G-shop</string>
     <string name="login">Log in</string>
@@ -52,7 +53,7 @@
     <string name="cancel">Cancel</string>
     <string name="delete">Delete</string>
     <string name="http429_msg">Server problems. Please try again later</string>
-    
+
     <string name="complete_name_field">Complete name field</string>
     <string name="complete_surname_field">Complete surname field</string>
     <string name="complete_descirption_field">Complete description field</string>

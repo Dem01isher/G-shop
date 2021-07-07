@@ -61,6 +61,7 @@
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/headline"
                         android:layout_width="match_parent"
+                        android:maxLength="100"
                         android:layout_height="match_parent"
                         android:inputType="textPersonName" />
 
@@ -86,6 +87,7 @@
                         android:id="@+id/price"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:maxLength="7"
                         android:inputType="numberDecimal" />
 
                 </com.google.android.material.textfield.TextInputLayout>
@@ -149,6 +151,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:inputType="textMultiLine"
+                        android:maxLength="1000"
                         android:scrollbars="vertical"
                         android:imeOptions="actionNext" />
 

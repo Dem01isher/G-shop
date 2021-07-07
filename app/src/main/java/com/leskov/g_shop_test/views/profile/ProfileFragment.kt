@@ -55,7 +55,7 @@ class ProfileFragment : BaseVMFragment<ProfileViewModel, FragmentProfileBinding>
             binding.town.text = it.city
             binding.emailAdress.text = auth.currentUser!!.email.toString()
             binding.phoneNumber.text = it.phoneNumber
-            binding.userDescription.text = it.description
+            binding.userDescription.text = it.userDescription
         }
         val user = auth.currentUser
         if(user?.photoUrl == null){

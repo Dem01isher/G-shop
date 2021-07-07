@@ -11,6 +11,8 @@ interface RemoteDataSource {
 
     fun getAdverts(): Single<List<AdvertResponse>>
 
+    fun getUserAdverts(): Single<List<AdvertResponse>>
+
     fun getAdvertById(id: String): Single<AdvertResponse>
 
     fun createAdvert(advert: AdvertResponse): Completable

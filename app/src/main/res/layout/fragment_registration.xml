@@ -41,6 +41,7 @@
             app:layout_constraintTop_toBottomOf="@id/toolbar_layout" />
 
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@id/email_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
@@ -48,11 +49,12 @@
             android:hint="@string/email"
             android:layout_marginStart="34dp"
             android:layout_marginEnd="34dp"
+            app:layout_constraintVertical_bias="0.05"
             app:startIconDrawable="@drawable/ic_email"
             app:layout_constraintTop_toBottomOf="@id/toolbar_layout"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/guideline_center">
+            app:layout_constraintBottom_toBottomOf="parent">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/email"
@@ -73,9 +75,11 @@
             android:layout_marginStart="34dp"
             android:layout_marginEnd="34dp"
             app:startIconDrawable="@drawable/ic_lock"
-            app:layout_constraintTop_toBottomOf="@id/guideline_center"
+            app:layout_constraintVertical_bias="0.2"
+            app:layout_constraintTop_toBottomOf="@id/toolbar_layout"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/password"
@@ -90,23 +94,17 @@
             android:id="@+id/register_continue"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/continue_register"
-            app:layout_constraintVertical_bias="0.1"
             android:fontFamily="@font/roboto_light"
             android:letterSpacing="0"
-            android:textAllCaps="false"
             android:paddingHorizontal="48dp"
+            android:text="@string/continue_register"
+            android:textAllCaps="false"
+            app:layout_constraintVertical_bias="0.4"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/password_layout" />
+            app:layout_constraintTop_toBottomOf="@+id/toolbar_layout" />
 
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline_center"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.25" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

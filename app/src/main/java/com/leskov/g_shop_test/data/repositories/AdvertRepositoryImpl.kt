@@ -11,6 +11,8 @@ class AdvertRepositoryImpl(private val remoteDataSource: RemoteDataSource) : Adv
 
     override fun getAdverts(): Single<List<AdvertResponse>> = remoteDataSource.getAdverts()
 
+    override fun getUserAdverts(): Single<List<AdvertResponse>> = remoteDataSource.getUserAdverts()
+
     override fun getAdvertById(id: String): Single<AdvertResponse> = remoteDataSource.getAdvertById(id)
 
     override fun createAdvert(advert: AdvertResponse): Completable = remoteDataSource.createAdvert(advert)

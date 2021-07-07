@@ -9,6 +9,8 @@ interface AdvertRepository {
 
     fun getAdverts(): Single<List<AdvertResponse>>
 
+    fun getUserAdverts(): Single<List<AdvertResponse>>
+
     fun getAdvertById(id: String): Single<AdvertResponse>
 
     fun uploadImages(images: List<Uri>): Single<List<String>>

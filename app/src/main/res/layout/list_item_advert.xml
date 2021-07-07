@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:tools="http://schemas.android.com/tools">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
         <variable
@@ -8,8 +10,6 @@
     </data>
 
     <androidx.cardview.widget.CardView
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/item"
         app:cardCornerRadius="10dp"
         android:layout_marginTop="6dp"
@@ -27,13 +27,12 @@
                 android:id="@+id/poster"
                 android:layout_width="137dp"
                 android:layout_height="134dp"
+                android:layout_margin="6dp"
                 android:contentDescription="@null"
                 android:src="@drawable/ic_image_template"
-                android:layout_margin="14dp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/description"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"/>
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/title"
@@ -50,10 +49,11 @@
 
             <TextView
                 android:id="@+id/description"
-                android:layout_width="239dp"
+                android:layout_width="220dp"
                 android:layout_height="61dp"
                 android:text="The Gibson Les Paul is a solid body electric guitar that was first sold by the Gibson Guitar Corporation in 1952. The Les Paul was designed by ..."
                 tools:text="@{advert.description}"
+                app:layout_constraintHorizontal_bias="0.8"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/poster"
                 app:layout_constraintTop_toBottomOf="@id/title"

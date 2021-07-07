@@ -1,7 +1,6 @@
 package com.leskov.g_shop_test.data.sources.remote
 
 import android.net.Uri
-import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -40,11 +39,37 @@ class RemoteDataSourceImpl(private val retrofit: Retrofit) : RemoteDataSource {
                             title = document["title"].toString(),
                             description = document["description"].toString(),
                             price = document["price"].toString() + " $",
-                            images = document["images"] as? List<String> ?: listOf()
+                            images = document["images"] as? List<String> ?: listOf(),
+                            user_id = FirebaseAuth.getInstance().currentUser?.uid ?: ""
                         )
                     )
                 }
                 it.onSuccess(list)
+            }
+            .addOnFailureListener { exeption ->
+                it.onError(exeption)
+            }
+    }
+
+    override fun getUserAdverts(): Single<List<AdvertResponse>> = Single.create {
+        db.collection("adverts")
+            .whereEqualTo("user_id", FirebaseAuth.getInstance().currentUser?.uid ?: "")
+            .get()
+            .addOnSuccessListener { success ->
+               val adverts : MutableList<AdvertResponse> = mutableListOf()
+                for (document in success){
+                    adverts.add(
+                        AdvertResponse(
+                            id = document.id,
+                            title = document["title"].toString(),
+                            description = document["description"].toString(),
+                            price = document["price"].toString() + " $",
+                            images = document["images"] as? List<String> ?: listOf(),
+                            user_id = FirebaseAuth.getInstance().currentUser?.uid ?: ""
+                        )
+                    )
+                }
+                it.onSuccess(adverts)
             }
             .addOnFailureListener { exeption ->
                 it.onError(exeption)
@@ -61,7 +86,8 @@ class RemoteDataSourceImpl(private val retrofit: Retrofit) : RemoteDataSource {
                     title = result["title"].toString(),
                     description = result["description"].toString(),
                     price = result["price"].toString() + " $",
-                    images = result["images"] as? List<String> ?: listOf()
+                    images = result["images"] as? List<String> ?: listOf(),
+                    user_id = FirebaseAuth.getInstance().currentUser?.uid ?: ""
                 )
                 it.onSuccess(product)
             }
@@ -139,7 +165,7 @@ class RemoteDataSourceImpl(private val retrofit: Retrofit) : RemoteDataSource {
                     surName = document["surName"].toString(),
                     phoneNumber = document["phoneNumber"].toString(),
                     city = document["city"].toString(),
-                    description = document["userDescription"].toString()
+                    userDescription = document["userDescription"].toString()
                 )
                 emitter.onSuccess(userData)
             }

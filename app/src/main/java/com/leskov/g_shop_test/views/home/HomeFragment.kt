@@ -47,6 +47,8 @@ class HomeFragment : BaseVMFragment<HomeViewModel, FragmentHomeBinding>() {
 
         binding.swipe.setOnRefreshListener {
             binding.swipe.showRefresh()
+            binding.noAdverts.gone()
+            binding.listIsEmpty.gone()
             viewModel.getAdverts()
         }
 
@@ -66,5 +68,10 @@ class HomeFragment : BaseVMFragment<HomeViewModel, FragmentHomeBinding>() {
                 binding.noAdverts.visible()
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.getAdverts()
     }
 }

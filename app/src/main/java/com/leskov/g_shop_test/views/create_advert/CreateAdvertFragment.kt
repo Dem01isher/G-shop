@@ -1,17 +1,21 @@
 package com.leskov.g_shop_test.views.create_advert
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextUtils
+import android.text.TextWatcher
 import android.view.View
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import com.google.firebase.auth.FirebaseAuth
 import com.leskov.g_shop.core.extensions.disable
-import com.leskov.g_shop_test.core.extensions.nonNullObserve
 import com.leskov.g_shop.core.extensions.setOnClickWithDebounce
+import com.leskov.g_shop_test.R
+import com.leskov.g_shop_test.core.extensions.nonNullObserve
 import com.leskov.g_shop_test.core.fragment.BaseVMFragment
+import com.leskov.g_shop_test.databinding.FragmentCreateAdvertBinding
 import com.leskov.g_shop_test.domain.entitys.ImageEntity
 import com.leskov.g_shop_test.domain.responses.AdvertResponse
-import com.leskov.g_shop_test.R
-import com.leskov.g_shop_test.databinding.FragmentCreateAdvertBinding
 import kotlin.reflect.KClass
 
 
@@ -39,6 +43,8 @@ class CreateAdvertFragment : BaseVMFragment<CreateAdvertViewModel, FragmentCreat
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
+
         initObservers()
 
         binding.selectImage.adapter = adapter
@@ -48,12 +54,49 @@ class CreateAdvertFragment : BaseVMFragment<CreateAdvertViewModel, FragmentCreat
     }
 
     private fun initListeners() {
+
+        val headlineTextWatcher = object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                binding.headlineLayout.error = null
+            }
+
+            override fun afterTextChanged(s: Editable?) {}
+        }
+        val priceTextWatcher = object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                binding.priceLayout.error = null
+            }
+
+            override fun afterTextChanged(s: Editable?) {}
+
+        }
+        val descriptionTextWatcher = object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                binding.descriptionLayout.error = null
+            }
+
+            override fun afterTextChanged(s: Editable?) {}
+        }
+
+        binding.headline.addTextChangedListener(headlineTextWatcher)
+        binding.price.addTextChangedListener(priceTextWatcher)
+        binding.description.addTextChangedListener(descriptionTextWatcher)
+
         adapter.setOnAddImageListener {
             pickImage.launch("image/*")
         }
 
         binding.createAdvert.setOnClickWithDebounce {
-            createAdvert()
+            if (adapter.list.isEmpty()) {
+                showMessage("Please upload the images")
+            } else
+                createAdvert()
         }
 
         binding.toolbar.setNavigationOnClickListener {
@@ -62,14 +105,46 @@ class CreateAdvertFragment : BaseVMFragment<CreateAdvertViewModel, FragmentCreat
     }
 
     private fun createAdvert() {
-        if (binding.price.text.toString().isEmpty()
-            || binding.description.text.toString().isEmpty()
-            || binding.headline.text.toString().isEmpty()){
+        if (TextUtils.isEmpty(binding.price.text.toString())
+            && TextUtils.isEmpty(binding.description.text.toString())
+            && TextUtils.isEmpty(binding.headline.text.toString())
+        ) {
             binding.headlineLayout.error = getString(R.string.set_headline)
             binding.descriptionLayout.error = getString(R.string.set_description)
             binding.priceLayout.error = getString(R.string.set_price)
             return
+        } else if (binding.price.text.isNullOrEmpty()) {
+            binding.priceLayout.error = getString(R.string.set_price)
+            binding.description.error = null
+            binding.headline.error = null
+        } else if (binding.description.text.isNullOrEmpty()) {
+            binding.priceLayout.error = null
+            binding.description.error = getString(R.string.set_description)
+            binding.headline.error = null
+        } else if (binding.headline.text.isNullOrEmpty()) {
+            binding.priceLayout.error = null
+            binding.description.error = null
+            binding.headline.error = getString(R.string.set_headline)
+        } else if (binding.headline.text.isNullOrEmpty()
+            && binding.description.text.isNullOrEmpty()
+        ) {
+            binding.priceLayout.error = null
+            binding.description.error = getString(R.string.set_description)
+            binding.headline.error = getString(R.string.set_headline)
+        } else if (binding.headline.text.isNullOrEmpty()
+            && binding.price.text.isNullOrEmpty()
+        ) {
+            binding.priceLayout.error = getString(R.string.set_price)
+            binding.description.error = null
+            binding.headline.error = getString(R.string.set_headline)
+        } else if (binding.description.text.isNullOrEmpty() && binding.headline.text.isNullOrEmpty()) {
+            binding.priceLayout.error = null
+            binding.description.error = getString(R.string.set_description)
+            binding.headline.error = getString(R.string.set_headline)
         } else {
+            binding.priceLayout.error = null
+            binding.description.error = null
+            binding.headline.error = null
             binding.headlineLayout.disable()
             binding.priceLayout.disable()
             binding.descriptionLayout.disable()
@@ -81,7 +156,8 @@ class CreateAdvertFragment : BaseVMFragment<CreateAdvertViewModel, FragmentCreat
                     title = binding.headline.text.toString(),
                     description = binding.description.text.toString(),
                     price = binding.price.text.toString(),
-                    id = id.toString()
+                    id = id.toString(),
+                    user_id = FirebaseAuth.getInstance().currentUser?.uid ?: ""
                 )
             )
         }
@@ -91,5 +167,11 @@ class CreateAdvertFragment : BaseVMFragment<CreateAdvertViewModel, FragmentCreat
         viewModel.product.nonNullObserve(viewLifecycleOwner) {
             navController.popBackStack()
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (adapter.list.isNotEmpty())
+            showMessage("Image array is not empty")
     }
 }

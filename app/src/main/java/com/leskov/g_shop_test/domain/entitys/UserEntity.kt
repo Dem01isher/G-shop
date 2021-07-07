@@ -10,5 +10,5 @@ data class UserEntity(
     val surName : String,
     val city : String,
     val phoneNumber : String,
-    val description : String
+    val userDescription : String
 )

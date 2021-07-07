@@ -3,26 +3,20 @@ package com.leskov.g_shop_test.core.view_model
 import androidx.annotation.IdRes
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
+import com.google.android.gms.tasks.Task
 import com.google.firebase.FirebaseException
 import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.FirebaseTooManyRequestsException
-import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
-import com.google.firebase.auth.FirebaseAuthInvalidUserException
-import com.google.firebase.auth.FirebaseAuthUserCollisionException
-import com.google.firebase.auth.FirebaseAuthWeakPasswordException
+import com.google.firebase.auth.*
 import com.leskov.g_shop_test.R
 import com.leskov.g_shop_test.core.event.EventLiveData
 import com.leskov.g_shop_test.core.event.EventMutableLiveData
+import com.leskov.g_shop_test.domain.entitys.ResultOf
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.exceptions.UndeliverableException
-import kotlinx.coroutines.CoroutineDispatcher
-import retrofit2.adapter.rxjava2.HttpException
 import timber.log.Timber
-import java.lang.NumberFormatException
 import java.net.ConnectException
-import java.net.SocketTimeoutException
-import java.net.UnknownHostException
 import java.util.concurrent.TimeoutException
 
 open class BaseViewModel : ViewModel() {
@@ -53,19 +47,18 @@ open class BaseViewModel : ViewModel() {
 
     fun navigate(@IdRes route: Int) = _navigate.postEvent(route)
 
-
-    fun Throwable.parseResponseError() {
+    fun Throwable.parseResponseError() : String {
         return when {
             this is FirebaseAuthInvalidCredentialsException -> {
-                showMessage(R.string.firebase_auth_invalid_credentials_exception)
+                ResultOf.Success("Incorrect password or user does not have a password").toString()
             }
             this is FirebaseAuthInvalidUserException -> {
-                showMessage(R.string.firebase_auth_invalid_user_exception)
+                ResultOf.Success("User does not exist or has been deleted").toString()
 
             }
-            this is FirebaseTooManyRequestsException -> {
-                showMessage(R.string.http429_msg)
-            }
+            this is FirebaseTooManyRequestsException -> ({
+                showMessage("Server problems. Please try again later")
+            }).toString()
 
             this is UndeliverableException -> {
                 if (this.message?.trim()?.contains(
@@ -73,67 +66,50 @@ open class BaseViewModel : ViewModel() {
                         true
                     ) == true
                 ) {
-                    showMessage(R.string.http429_msg)
+                    ResultOf.Success("Server problems. Please try again later").toString()
                 } else {
-                    Timber.e(this)
-                    showMessage(this.message.toString())
+                    ResultOf.Success(this.message.toString()).toString()
                 }
 
             }
             this is FirebaseAuthUserCollisionException -> {
-                showMessage(R.string.user_exists_error_msg)
-            }
-            this is RuntimeException -> {
-                when (this.message) {
-                    "com.google.firebase.FirebaseException: An internal error has occurred. [ 7: ]" -> {
-                        showMessage(R.string.no_internet_connection)
-                    }
-                    "com.google.firebase.FirebaseNetworkException: A network error (such as timeout, interrupted connection or unreachable host) has occurred." -> {
-                        showMessage(R.string.no_internet_connection)
-                    }
-                    else -> {
-                        if (this.message?.contains("TimeoutException") == true)
-                            showMessage(R.string.no_internet_or_slow)
-                        else
-                            showMessage(this.message.toString())
-                    }
-                }
+                showMessage("A user with this email already exists").toString()
             }
 
             this is FirebaseAuthWeakPasswordException -> {
-                showMessage(R.string.password_is_weak)
+                ResultOf.Success("Password should be at least 6 characters").toString()
             }
 
             this is FirebaseAuthInvalidUserException -> {
-                showMessage(R.string.firebase_auth_invalid_user_exception)
+                ResultOf.Success("User does not exist or has been deleted").toString()
             }
             this.message?.contains("[ Password should be at least 6 characters ]") == true -> {
-                showMessage(R.string.firebase_auth_invalid_user_exception)
+                ResultOf.Success("User does not exist or has been deleted").toString()
             }
 
             this is TimeoutException -> {
-                showMessage(R.string.no_internet_or_slow)
+                ResultOf.Success(R.string.no_internet_or_slow.toString()).toString()
             }
             this.message?.contains("FirebaseAuthInvalidUserException") == true -> {
-                showMessage(R.string.firebase_auth_invalid_user_exception)
+                ResultOf.Success("User does not exist or has been deleted").toString()
 
             }
             this is FirebaseException -> {
                 if (this.message == "An internal error has occurred. [ 7: ]") {
-                    showMessage(R.string.no_internet_connection)
+                    ResultOf.Success("No connection").toString()
                 } else {
-                    showMessage(this.message.toString())
+                    ResultOf.Success(this.message.toString()).toString()
                 }
             }
             this is ConnectException -> {
-                showMessage(R.string.no_internet_connection)
+                ResultOf.Success("No connection").toString()
             }
             this is FirebaseNetworkException -> {
-                showMessage(R.string.no_internet_connection)
+                ResultOf.Success("No connection").toString()
             }
-            else -> showMessage(
-                this.message?.capitalize().toString()
-            )
+            else -> ResultOf.Success(
+                this.message?.capitalize()
+            ).toString()
         }
     }
 

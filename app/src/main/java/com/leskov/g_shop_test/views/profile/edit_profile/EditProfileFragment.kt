@@ -60,7 +60,7 @@ class EditProfileFragment : BaseVMFragment<EditProfileViewModel, FragmentEditPro
             binding.city.setText(it.city)
             binding.emailAdress.setText(user.email)
             binding.phoneNumber.setText(it.phoneNumber)
-            binding.description.setText(it.description)
+            binding.description.setText(it.userDescription)
         }
         viewModel.updateUser.nonNullObserve(viewLifecycleOwner){
             navController.popBackStack()

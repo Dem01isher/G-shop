@@ -8,6 +8,7 @@ package com.leskov.g_shop_test.domain.responses
 data class AdvertResponse(
     var images: List<String> = listOf(),
     val id : String,
+    val user_id: String,
     val title : String = "",
     val description : String = "",
     val price : String = ""
