@@ -2,6 +2,8 @@ package com.leskov.g_shop_test.views.profile.user_adverts
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.os.bundleOf
+import androidx.navigation.fragment.findNavController
 import com.leskov.g_shop.core.extensions.hideRefresh
 import com.leskov.g_shop.core.extensions.invisible
 import com.leskov.g_shop.core.extensions.showRefresh
@@ -20,7 +22,8 @@ class UserAdvertsFragment : BaseVMFragment<UserAdvertsViewModel, FragmentUserAdv
     override val layoutId: Int = R.layout.fragment_user_adverts
 
     private val adapter = UserAdvertsAdapter{
-
+        navController
+            .navigate(R.id.action_userAdvertsFragment_to_aboutAdvertFragment2, bundleOf("advert_id" to it.id))
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

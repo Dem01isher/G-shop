@@ -3,6 +3,9 @@ package com.leskov.g_shop_test.views.profile.edit_profile
 import android.os.Bundle
 import android.view.View
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import com.leskov.g_shop_test.core.extensions.nonNullObserve
 import com.leskov.g_shop.core.extensions.setOnClickWithDebounce
 import com.leskov.g_shop_test.core.fragment.BaseVMFragment
@@ -18,7 +21,11 @@ class EditProfileFragment : BaseVMFragment<EditProfileViewModel, FragmentEditPro
 
     override val layoutId: Int = R.layout.fragment_edit_profile
 
-    private val user = FirebaseAuth.getInstance().currentUser!!
+    private val auth : FirebaseAuth by lazy {
+        FirebaseAuth.getInstance()
+    }
+
+    private val user : FirebaseUser = auth.currentUser!!
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -46,7 +53,7 @@ class EditProfileFragment : BaseVMFragment<EditProfileViewModel, FragmentEditPro
         binding.toolbar.setOnMenuItemClickListener {
             when (it.itemId){
                 R.id.delete_user -> DeleteAccountDialog{
-
+                    navController.navigate(R.id.action_editProfileFragment_to_deleteAccountFragment)
                 }.show(parentFragmentManager, "")
             }
             true

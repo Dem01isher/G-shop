@@ -2,6 +2,7 @@ package com.leskov.g_shop_test.views.profile.user_adverts
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import com.bumptech.glide.Glide
 import com.leskov.g_shop_test.R
 import com.leskov.g_shop_test.core.recycler_view_adapter.BaseListAdapter
 import com.leskov.g_shop_test.core.recycler_view_adapter.BindingHolder
@@ -37,6 +38,16 @@ class UserAdvertsAdapter(private val click: (AdvertResponse) -> Unit) :
         val item = getItem(holder.adapterPosition)
 
         holder.binding.advert = item
+
+        if (item.images.isEmpty()) {
+            Glide.with(holder.itemView.context)
+                .load(R.drawable.ic_guitaricon)
+                .into(holder.binding.poster)
+        } else {
+            Glide.with(holder.itemView.context)
+                .load(item.images[0])
+                .into(holder.binding.poster)
+        }
 
         holder.binding.root.setOnClickListener {
             click(item)

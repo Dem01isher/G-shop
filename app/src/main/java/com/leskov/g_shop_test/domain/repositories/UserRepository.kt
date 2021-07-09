@@ -31,5 +31,7 @@ interface UserRepository {
 
     fun getCurrentUser() : FirebaseUser?
 
+    fun deleteUser(email: String, password: String) : Completable
+
     fun logout()
 }

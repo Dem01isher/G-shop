@@ -1,4 +1,4 @@
-package com.leskov.g_shop.views.about_advert
+package com.leskov.g_shop_test.views.about_user_advert
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -10,11 +10,11 @@ import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 
 /**
- *  Created by Android Studio on 6/27/2021 3:13 AM
+ *  Created by Android Studio on 7/7/2021 11:39 PM
  *  Developer: Sergey Leskov
  */
 
-class AboutAdvertViewModel(private val repository: AdvertRepository) : BaseViewModel() {
+class AboutUserAdvertViewModel(private val repository: AdvertRepository) : BaseViewModel() {
     private val _advert = MutableLiveData<AdvertResponse>()
     val advert : LiveData<AdvertResponse> = _advert
 

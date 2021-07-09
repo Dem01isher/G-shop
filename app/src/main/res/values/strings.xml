@@ -52,10 +52,14 @@
     <string name="cancel">Cancel</string>
     <string name="delete">Delete</string>
     <string name="http429_msg">Server problems. Please try again later</string>
-    
+
     <string name="complete_name_field">Complete name field</string>
     <string name="complete_surname_field">Complete surname field</string>
     <string name="complete_descirption_field">Complete description field</string>
     <string name="complete_city_field">Complete city field</string>
     <string name="complete_phone_number_field">Complete phone number field</string>
+    <string name="advert">Advert</string>
+    <string name="show_contact">Show Contact</string>
+    <string name="delete_account">Delete Account</string>
+    <string name="delete_user_description">You are about to delete your account, which provides access to the show of your ads. You will no longer be able to use them, and all data in your account will be lost.</string>
 </resources>

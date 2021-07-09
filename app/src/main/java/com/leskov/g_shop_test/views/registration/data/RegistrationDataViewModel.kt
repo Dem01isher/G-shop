@@ -2,17 +2,10 @@ package com.leskov.g_shop_test.views.registration.data
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.google.firebase.auth.FirebaseAuth
-import com.leskov.g_shop.core.extensions.gone
-import com.leskov.g_shop.core.extensions.visible
-import com.leskov.g_shop_test.R
 import com.leskov.g_shop_test.core.extensions.applyIO
 import com.leskov.g_shop_test.core.view_model.BaseViewModel
-import com.leskov.g_shop_test.domain.entitys.ResultOf
 import com.leskov.g_shop_test.domain.entitys.UserEntity
 import com.leskov.g_shop_test.domain.repositories.UserRepository
-import com.leskov.g_shop_test.utils.listeners.FirebaseAuthListener
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
 import timber.log.Timber
 

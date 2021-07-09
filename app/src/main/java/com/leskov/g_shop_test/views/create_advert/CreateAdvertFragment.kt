@@ -93,10 +93,7 @@ class CreateAdvertFragment : BaseVMFragment<CreateAdvertViewModel, FragmentCreat
         }
 
         binding.createAdvert.setOnClickWithDebounce {
-            if (adapter.list.isEmpty()) {
-                showMessage("Please upload the images")
-            } else
-                createAdvert()
+            createAdvert()
         }
 
         binding.toolbar.setNavigationOnClickListener {
@@ -167,11 +164,5 @@ class CreateAdvertFragment : BaseVMFragment<CreateAdvertViewModel, FragmentCreat
         viewModel.product.nonNullObserve(viewLifecycleOwner) {
             navController.popBackStack()
         }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        if (adapter.list.isNotEmpty())
-            showMessage("Image array is not empty")
     }
 }

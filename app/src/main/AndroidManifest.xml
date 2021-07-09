@@ -5,7 +5,6 @@
 
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-feature android:name="android.hardware.screen.portrait" />
     
     <application
         android:name=".views.application.Application"
@@ -16,9 +15,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Gshoptest">
         <uses-library android:name="com.google.android.maps" />
-        <activity android:name=".MainActivity"
-            android:screenOrientation="portrait"
-            tools:ignore="LockedOrientationActivity">
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 

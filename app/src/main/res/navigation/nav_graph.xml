@@ -74,8 +74,12 @@
             android:id="@+id/action_homeFragment_to_profileFragment"
             app:destination="@id/profileFragment" />
         <action
-            android:id="@+id/action_homeFragment_to_aboutAdvertFragment"
-            app:destination="@id/aboutAdvertFragment" />
+            android:id="@+id/action_homeFragment_to_aboutUserAdvertFragment"
+            app:destination="@id/aboutUserAdvertFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_aboutAdvertFragment2"
+            app:destination="@id/aboutAdvertFragment2" />
+
     </fragment>
     <fragment
         android:id="@+id/createAdvertFragment"
@@ -97,16 +101,44 @@
             android:id="@+id/action_profileFragment_to_editProfileFragment"
             app:destination="@id/editProfileFragment" />
     </fragment>
-    <fragment
-        android:id="@+id/aboutAdvertFragment"
-        android:name="com.leskov.g_shop_test.views.about_advert.AboutAdvertFragment"
-        android:label="AboutAdvertFragment" />
+
     <fragment
         android:id="@+id/userAdvertsFragment"
         android:name="com.leskov.g_shop_test.views.profile.user_adverts.UserAdvertsFragment"
-        android:label="UserAdvertsFragment" />
+        android:label="UserAdvertsFragment" >
+        <action
+            android:id="@+id/action_userAdvertsFragment_to_aboutAdvertFragment2"
+            app:destination="@id/aboutAdvertFragment2" />
+    </fragment>
     <fragment
         android:id="@+id/editProfileFragment"
         android:name="com.leskov.g_shop_test.views.profile.edit_profile.EditProfileFragment"
-        android:label="EditProfileFragment" />
+        android:label="EditProfileFragment" >
+        <action
+            android:id="@+id/action_editProfileFragment_to_deleteAccountFragment"
+            app:destination="@id/deleteAccountFragment" />
+        <action
+            android:id="@+id/action_editProfileFragment_to_loginFragment"
+            app:destination="@id/loginFragment"
+            app:popUpTo="@id/nav_graph.xml"
+            app:popUpToInclusive="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/aboutAdvertFragment2"
+        android:name="com.leskov.g_shop_test.views.your_advert.AboutAdvertFragment"
+        android:label="AboutAdvertFragment" />
+    <fragment
+        android:id="@+id/aboutUserAdvertFragment"
+        android:name="com.leskov.g_shop_test.views.about_user_advert.AboutUserAdvertFragment"
+        android:label="AboutUserAdvertFragment" />
+    <fragment
+        android:id="@+id/deleteAccountFragment"
+        android:name="com.leskov.g_shop_test.views.profile.delete_account.DeleteAccountFragment"
+        android:label="DeleteAccountFragment" >
+        <action
+            android:id="@+id/action_deleteAccountFragment_to_loginFragment"
+            app:destination="@id/loginFragment"
+            app:popUpTo="@id/nav_graph.xml"
+            app:popUpToInclusive="true" />
+    </fragment>
 </navigation>

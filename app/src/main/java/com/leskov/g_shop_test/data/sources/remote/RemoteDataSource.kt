@@ -15,7 +15,17 @@ interface RemoteDataSource {
 
     fun getAdvertById(id: String): Single<AdvertResponse>
 
+    fun getCurrentUserAdvertById(id: String): Single<AdvertResponse>
+
     fun createAdvert(advert: AdvertResponse): Completable
+
+    fun updateAdvert(
+        id: String,
+        headline: String,
+        price: String,
+        images: List<Uri>,
+        description: String
+    ): Completable
 
     fun uploadImages(images: List<Uri>): Single<List<String>>
 
@@ -36,7 +46,9 @@ interface RemoteDataSource {
         userDescription: String
     ): Completable
 
-    fun getCurrentUser() : FirebaseUser?
+    fun getCurrentUser(): FirebaseUser?
+
+    fun deleteUser(email: String, password: String) : Completable
 
     fun logout()
 }

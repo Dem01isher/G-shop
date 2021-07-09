@@ -2,9 +2,9 @@ package com.leskov.g_shop_test.data.sources.remote
 
 import android.net.Uri
 import androidx.lifecycle.MutableLiveData
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.*
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Source
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.leskov.g_shop_test.domain.entitys.UserEntity
@@ -25,7 +25,9 @@ class RemoteDataSourceImpl(private val retrofit: Retrofit) : RemoteDataSource {
     private val auth: FirebaseAuth by lazy {
         FirebaseAuth.getInstance()
     }
-    private val userLiveData = MutableLiveData<FirebaseUser>()
+
+    private val user = FirebaseAuth.getInstance().currentUser
+
 
     override fun getAdverts(): Single<List<AdvertResponse>> = Single.create {
         db.collection("adverts")
@@ -40,7 +42,7 @@ class RemoteDataSourceImpl(private val retrofit: Retrofit) : RemoteDataSource {
                             description = document["description"].toString(),
                             price = document["price"].toString() + " $",
                             images = document["images"] as? List<String> ?: listOf(),
-                            user_id = FirebaseAuth.getInstance().currentUser?.uid ?: ""
+                            user_id = document["user_id"].toString()
                         )
                     )
                 }
@@ -97,6 +99,12 @@ class RemoteDataSourceImpl(private val retrofit: Retrofit) : RemoteDataSource {
 
     }
 
+
+    override fun getCurrentUserAdvertById(id: String): Single<AdvertResponse> = Single.create {
+        db.collection("adverts")
+            .document(id)
+    }
+
     override fun createAdvert(advert: AdvertResponse): Completable = Completable.create {
         db.collection("adverts")
             .add(advert)
@@ -105,6 +113,32 @@ class RemoteDataSourceImpl(private val retrofit: Retrofit) : RemoteDataSource {
             }
             .addOnFailureListener { exeption ->
                 it.onError(exeption)
+            }
+    }
+
+    override fun updateAdvert(
+        id: String,
+        headline: String,
+        price: String,
+        images: List<Uri>,
+        description: String
+    ): Completable = Completable.create {
+        db.collection("adverts")
+            .document(id)
+            .update(
+                "title", headline,
+                "price", price,
+                "images", images,
+                "description", description
+            )
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    it.onComplete()
+                } else {
+                    task.exception?.let {
+                        throw it
+                    }
+                }
             }
     }
 
@@ -212,6 +246,18 @@ class RemoteDataSourceImpl(private val retrofit: Retrofit) : RemoteDataSource {
         }
 
     override fun getCurrentUser(): FirebaseUser? = auth.currentUser
+
+    override fun deleteUser(email: String, password: String): Completable = Completable.create { emitter ->
+        val credential = EmailAuthProvider.getCredential(email, password)
+        user?.reauthenticate(credential)
+            ?.addOnSuccessListener {
+                user.delete()
+                emitter.onComplete()
+            }
+            ?.addOnFailureListener {
+                emitter.onError(it)
+            }
+    }
 
     override fun logout() = auth.signOut()
 
