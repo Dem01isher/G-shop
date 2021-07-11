@@ -7,6 +7,7 @@ import com.leskov.g_shop_test.core.extensions.applyIO
 import com.leskov.g_shop_test.core.view_model.BaseViewModel
 import com.leskov.g_shop_test.domain.repositories.AdvertRepository
 import com.leskov.g_shop_test.domain.responses.AdvertResponse
+import com.leskov.g_shop_test.domain.responses.ImageResponse
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
@@ -24,6 +25,42 @@ class EditAdvertViewModel(private val repository: AdvertRepository) : BaseViewMo
 
     private val _advertById = MutableLiveData<AdvertResponse>()
     val advertById: LiveData<AdvertResponse> = _advertById
+
+    private val _images = MutableLiveData<List<ImageResponse>>()
+    val images : LiveData<List<ImageResponse>> = _images
+//    fun loadImage(id: String, images: List<Uri>){
+//        disposables + repository.loadImages(id, images)
+//            .flatMapCompletable {
+//                product.images = it
+//                repository.createAdvert(product)
+//            }
+//    }
+
+    fun loadImages(id: String){
+        disposables + repository.loadImages(id)
+            .applyIO()
+            .subscribeBy(
+                onSuccess = {
+                    _images.postValue(it)
+                },
+                onError = {
+                    Timber.d(it)
+                }
+            )
+    }
+
+    fun deleteAdvert(id: String){
+        disposables + repository.deleteAdvert(id)
+            .applyIO()
+            .subscribeBy(
+                onComplete = {
+                    _advert.postValue(Unit)
+                },
+                onError = {
+                    Timber.d(it)
+                }
+            )
+    }
 
     fun updateAdvert(
         id: String,

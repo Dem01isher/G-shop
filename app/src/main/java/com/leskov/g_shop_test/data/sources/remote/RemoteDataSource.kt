@@ -4,6 +4,7 @@ import android.net.Uri
 import com.google.firebase.auth.FirebaseUser
 import com.leskov.g_shop_test.domain.entitys.UserEntity
 import com.leskov.g_shop_test.domain.responses.AdvertResponse
+import com.leskov.g_shop_test.domain.responses.ImageResponse
 import io.reactivex.Completable
 import io.reactivex.Single
 
@@ -19,6 +20,8 @@ interface RemoteDataSource {
 
     fun createAdvert(advert: AdvertResponse): Completable
 
+    fun deleteAdvert(id: String) : Completable
+
     fun updateAdvert(
         id: String,
         headline: String,
@@ -28,6 +31,8 @@ interface RemoteDataSource {
     ): Completable
 
     fun uploadImages(images: List<Uri>): Single<List<String>>
+
+    fun loadImage(id: String) : Single<List<ImageResponse>>
 
     fun createUser(user: UserEntity): Completable
 

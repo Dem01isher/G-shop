@@ -9,6 +9,7 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.leskov.g_shop_test.domain.entitys.UserEntity
 import com.leskov.g_shop_test.domain.responses.AdvertResponse
+import com.leskov.g_shop_test.domain.responses.ImageResponse
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -177,6 +178,19 @@ class RemoteDataSourceImpl(private val retrofit: Retrofit) : RemoteDataSource {
             .toList()
     }
 
+    override fun loadImage(id: String): Single<List<ImageResponse>> = Single.create { emitter ->
+        db.collection("adverts")
+            .document(id)
+            .get()
+            .addOnSuccessListener { complete ->
+                val images = ImageResponse(complete["images"] as? List<String> ?: listOf())
+                emitter.onSuccess(listOf(images))
+            }
+            .addOnFailureListener {
+                emitter.onError(it)
+            }
+    }
+
     override fun createUser(user: UserEntity): Completable = Completable.create { emitter ->
         db.collection("users")
             .document(FirebaseAuth.getInstance().currentUser?.uid ?: "")
@@ -186,6 +200,19 @@ class RemoteDataSourceImpl(private val retrofit: Retrofit) : RemoteDataSource {
             }
             .addOnFailureListener {
                 emitter.onError(it)
+            }
+    }
+
+    override fun deleteAdvert(id: String): Completable = Completable.create { emitter ->
+        db.collection("adverts")
+            .document(id)
+            .delete()
+            .addOnCompleteListener {
+                if (it.isSuccessful){
+                    emitter.onComplete()
+                } else {
+                    emitter.onError(it.exception?.cause!!)
+                }
             }
     }
 

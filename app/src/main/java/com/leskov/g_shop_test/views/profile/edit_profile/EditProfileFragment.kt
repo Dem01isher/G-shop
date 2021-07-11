@@ -52,7 +52,7 @@ class EditProfileFragment : BaseVMFragment<EditProfileViewModel, FragmentEditPro
         }
         binding.toolbar.setOnMenuItemClickListener {
             when (it.itemId){
-                R.id.delete_user -> DeleteAccountDialog{
+                R.id.delete -> DeleteAccountDialog{
                     navController.navigate(R.id.action_editProfileFragment_to_deleteAccountFragment)
                 }.show(parentFragmentManager, "")
             }

@@ -120,6 +120,9 @@ dependencies {
     implementation 'org.koin:koin-androidx-viewmodel:2.1.5'
     implementation 'org.koin:koin-androidx-fragment:2.1.5'
 
+    // Slider
+    implementation 'me.relex:circleindicator:2.1.6'
+
 //    // Koin AndroidX Scope features
 //    implementation "org.koin:koin-androidx-scope:2.0.0"
 //    // Koin AndroidX ViewModel features

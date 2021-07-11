@@ -2,6 +2,7 @@ package com.leskov.g_shop_test.domain.repositories
 
 import android.net.Uri
 import com.leskov.g_shop_test.domain.responses.AdvertResponse
+import com.leskov.g_shop_test.domain.responses.ImageResponse
 import io.reactivex.Completable
 import io.reactivex.Single
 
@@ -25,5 +26,9 @@ interface AdvertRepository {
 
     fun uploadImages(images: List<Uri>): Single<List<String>>
 
+    fun loadImages(id: String) : Single<List<ImageResponse>>
+
     fun createAdvert(advert: AdvertResponse): Completable
+
+    fun deleteAdvert(id: String) : Completable
 }
