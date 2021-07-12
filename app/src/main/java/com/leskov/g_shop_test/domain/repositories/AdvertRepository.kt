@@ -14,13 +14,10 @@ interface AdvertRepository {
 
     fun getAdvertById(id: String): Single<AdvertResponse>
 
-    fun getCurrentUserAdvertById(id: String): Single<AdvertResponse>
-
     fun updateAdvert(
         id: String,
         headline: String,
         price: String,
-        images: List<Uri>,
         description: String
     ): Completable
 

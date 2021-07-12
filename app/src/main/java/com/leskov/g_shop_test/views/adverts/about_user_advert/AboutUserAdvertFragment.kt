@@ -1,11 +1,9 @@
-package com.leskov.g_shop_test.views.about_user_advert
+package com.leskov.g_shop_test.views.adverts.about_user_advert
 
 import android.os.Bundle
 import android.view.View
 import androidx.core.os.bundleOf
-import androidx.fragment.app.setFragmentResult
-import com.bumptech.glide.Glide
-import com.google.firebase.auth.FirebaseAuth
+import com.leskov.g_shop.core.extensions.setOnClickWithDebounce
 import com.leskov.g_shop_test.R
 import com.leskov.g_shop_test.core.extensions.nonNullObserve
 import com.leskov.g_shop_test.core.fragment.BaseVMFragment
@@ -27,6 +25,11 @@ class AboutUserAdvertFragment :
 
         viewModel.getAdvertById(arguments?.getString("advert_id") ?: "")
 
+        binding.showContact.setOnClickWithDebounce {
+            viewModel.advert.nonNullObserve(viewLifecycleOwner){
+                navController.navigate(R.id.action_aboutUserAdvertFragment_to_showUserFragment, bundleOf("user" to it.user_id))
+            }
+        }
 
         binding.toolbar.setNavigationOnClickListener {
             navController.popBackStack()

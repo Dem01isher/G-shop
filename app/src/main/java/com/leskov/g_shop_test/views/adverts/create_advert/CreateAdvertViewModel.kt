@@ -1,4 +1,4 @@
-package com.leskov.g_shop_test.views.create_advert
+package com.leskov.g_shop_test.views.adverts.create_advert
 
 import android.net.Uri
 import androidx.lifecycle.LiveData

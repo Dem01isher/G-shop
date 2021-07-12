@@ -101,11 +101,6 @@ class RemoteDataSourceImpl(private val retrofit: Retrofit) : RemoteDataSource {
     }
 
 
-    override fun getCurrentUserAdvertById(id: String): Single<AdvertResponse> = Single.create {
-        db.collection("adverts")
-            .document(id)
-    }
-
     override fun createAdvert(advert: AdvertResponse): Completable = Completable.create {
         db.collection("adverts")
             .add(advert)
@@ -121,7 +116,6 @@ class RemoteDataSourceImpl(private val retrofit: Retrofit) : RemoteDataSource {
         id: String,
         headline: String,
         price: String,
-        images: List<Uri>,
         description: String
     ): Completable = Completable.create {
         db.collection("adverts")
@@ -129,7 +123,6 @@ class RemoteDataSourceImpl(private val retrofit: Retrofit) : RemoteDataSource {
             .update(
                 "title", headline,
                 "price", price,
-                "images", images,
                 "description", description
             )
             .addOnCompleteListener { task ->
@@ -219,6 +212,25 @@ class RemoteDataSourceImpl(private val retrofit: Retrofit) : RemoteDataSource {
     override fun getUser(): Single<UserEntity> = Single.create { emitter ->
         db.collection("users")
             .document(FirebaseAuth.getInstance().currentUser?.uid ?: "")
+            .get()
+            .addOnSuccessListener { document ->
+                val userData = UserEntity(
+                    name = document["name"].toString(),
+                    surName = document["surName"].toString(),
+                    phoneNumber = document["phoneNumber"].toString(),
+                    city = document["city"].toString(),
+                    userDescription = document["userDescription"].toString()
+                )
+                emitter.onSuccess(userData)
+            }
+            .addOnFailureListener {
+                emitter.onError(it)
+            }
+    }
+
+    override fun getUserByAdvertId(userId: String): Single<UserEntity> = Single.create { emitter ->
+        db.collection("users")
+            .document(userId)
             .get()
             .addOnSuccessListener { document ->
                 val userData = UserEntity(

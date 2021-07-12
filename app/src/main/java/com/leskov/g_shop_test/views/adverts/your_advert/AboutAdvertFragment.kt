@@ -1,14 +1,13 @@
-package com.leskov.g_shop_test.views.your_advert
+package com.leskov.g_shop_test.views.adverts.your_advert
 
 import android.os.Bundle
 import android.view.View
 import androidx.core.os.bundleOf
-import androidx.fragment.app.setFragmentResult
 import com.leskov.g_shop_test.R
 import com.leskov.g_shop_test.core.extensions.nonNullObserve
 import com.leskov.g_shop_test.core.fragment.BaseVMFragment
 import com.leskov.g_shop_test.databinding.FragmentAboutAdvertBinding
-import com.leskov.g_shop_test.views.about_user_advert.SliderViewAdapter
+import com.leskov.g_shop_test.views.adverts.about_user_advert.SliderViewAdapter
 import kotlin.reflect.KClass
 
 
@@ -17,8 +16,6 @@ class AboutAdvertFragment : BaseVMFragment<AboutAdvertViewModel, FragmentAboutAd
     override val viewModelClass: KClass<AboutAdvertViewModel> = AboutAdvertViewModel::class
 
     override val layoutId: Int = R.layout.fragment_about_advert
-
-    private var clickListener: ((String) -> Unit)? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -66,9 +63,5 @@ class AboutAdvertFragment : BaseVMFragment<AboutAdvertViewModel, FragmentAboutAd
 //                    .into(binding.poster)
 //            }
         }
-    }
-
-    private fun setOnClickListener(listener: (String) -> Unit) {
-        clickListener = listener
     }
 }

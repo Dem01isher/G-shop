@@ -4,10 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.os.bundleOf
 import androidx.navigation.fragment.findNavController
-import com.leskov.g_shop.core.extensions.hideRefresh
-import com.leskov.g_shop.core.extensions.invisible
-import com.leskov.g_shop.core.extensions.showRefresh
-import com.leskov.g_shop.core.extensions.visible
+import com.leskov.g_shop.core.extensions.*
 import com.leskov.g_shop_test.R
 import com.leskov.g_shop_test.core.extensions.nonNullObserve
 import com.leskov.g_shop_test.core.fragment.BaseVMFragment
@@ -44,6 +41,10 @@ class UserAdvertsFragment : BaseVMFragment<UserAdvertsViewModel, FragmentUserAdv
 
         binding.toolbar.setNavigationOnClickListener {
             navController.popBackStack()
+        }
+
+        binding.fab.setOnClickWithDebounce {
+            navController.navigate(R.id.action_userAdvertsFragment_to_createAdvertFragment)
         }
     }
 

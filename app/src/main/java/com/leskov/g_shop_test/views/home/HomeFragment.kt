@@ -1,9 +1,12 @@
 package com.leskov.g_shop_test.views.home
 
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.View
 import androidx.core.os.bundleOf
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.auth.FirebaseAuth
 import com.leskov.g_shop.core.extensions.*
 import com.leskov.g_shop_test.R
@@ -36,6 +39,14 @@ class HomeFragment : BaseVMFragment<HomeViewModel, FragmentHomeBinding>() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val orientation = resources.configuration.orientation
+        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            binding.list.layoutManager = GridLayoutManager(requireContext(), 2)
+        } else {
+            binding.list.layoutManager = LinearLayoutManager(requireContext())
+        }
+
         binding.list.adapter = adapter
 
         initObservers()

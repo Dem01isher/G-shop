@@ -1,4 +1,4 @@
-package com.leskov.g_shop_test.views.create_advert
+package com.leskov.g_shop_test.views.adverts.create_advert
 
 /**
  *  Created by Android Studio on 6/23/2021 11:03 AM

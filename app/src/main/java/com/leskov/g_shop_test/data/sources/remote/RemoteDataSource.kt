@@ -16,8 +16,6 @@ interface RemoteDataSource {
 
     fun getAdvertById(id: String): Single<AdvertResponse>
 
-    fun getCurrentUserAdvertById(id: String): Single<AdvertResponse>
-
     fun createAdvert(advert: AdvertResponse): Completable
 
     fun deleteAdvert(id: String) : Completable
@@ -26,7 +24,6 @@ interface RemoteDataSource {
         id: String,
         headline: String,
         price: String,
-        images: List<Uri>,
         description: String
     ): Completable
 
@@ -37,6 +34,8 @@ interface RemoteDataSource {
     fun createUser(user: UserEntity): Completable
 
     fun getUser(): Single<UserEntity>
+
+    fun getUserByAdvertId(userId : String) : Single<UserEntity>
 
     fun loginUser(email: String, password: String): Completable
 

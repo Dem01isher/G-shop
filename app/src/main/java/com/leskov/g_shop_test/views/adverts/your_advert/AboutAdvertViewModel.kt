@@ -1,4 +1,4 @@
-package com.leskov.g_shop_test.views.your_advert
+package com.leskov.g_shop_test.views.adverts.your_advert
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

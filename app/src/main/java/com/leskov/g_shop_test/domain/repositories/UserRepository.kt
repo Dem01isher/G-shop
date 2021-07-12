@@ -31,6 +31,8 @@ interface UserRepository {
 
     fun getCurrentUser() : FirebaseUser?
 
+    fun getUserByAdvertId(userId : String) : Single<UserEntity>
+
     fun deleteUser(email: String, password: String) : Completable
 
     fun logout()

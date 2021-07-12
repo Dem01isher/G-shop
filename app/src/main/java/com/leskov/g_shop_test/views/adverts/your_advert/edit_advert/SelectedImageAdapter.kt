@@ -1,4 +1,4 @@
-package com.leskov.g_shop_test.views.your_advert.edit_advert
+package com.leskov.g_shop_test.views.adverts.your_advert.edit_advert
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

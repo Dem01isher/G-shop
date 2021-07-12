@@ -35,6 +35,9 @@ class UserRepositoryImpl(private val remoteDataSource: RemoteDataSource) : UserR
 
     override fun getCurrentUser(): FirebaseUser? = remoteDataSource.getCurrentUser()
 
+    override fun getUserByAdvertId(userId: String): Single<UserEntity> =
+        remoteDataSource.getUserByAdvertId(userId)
+
     override fun deleteUser(email: String, password: String): Completable =
         remoteDataSource.deleteUser(email, password)
 

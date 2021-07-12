@@ -83,7 +83,7 @@
     </fragment>
     <fragment
         android:id="@+id/createAdvertFragment"
-        android:name="com.leskov.g_shop_test.views.create_advert.CreateAdvertFragment"
+        android:name="com.leskov.g_shop_test.views.adverts.create_advert.CreateAdvertFragment"
         android:label="CreateAdvertFragment" />
     <fragment
         android:id="@+id/profileFragment"
@@ -109,6 +109,9 @@
         <action
             android:id="@+id/action_userAdvertsFragment_to_aboutAdvertFragment2"
             app:destination="@id/aboutAdvertFragment2" />
+        <action
+            android:id="@+id/action_userAdvertsFragment_to_createAdvertFragment"
+            app:destination="@id/createAdvertFragment" />
     </fragment>
     <fragment
         android:id="@+id/editProfileFragment"
@@ -125,7 +128,7 @@
     </fragment>
     <fragment
         android:id="@+id/aboutAdvertFragment2"
-        android:name="com.leskov.g_shop_test.views.your_advert.AboutAdvertFragment"
+        android:name="com.leskov.g_shop_test.views.adverts.your_advert.AboutAdvertFragment"
         android:label="AboutAdvertFragment" >
         <action
             android:id="@+id/action_aboutAdvertFragment2_to_editAdvertFragment"
@@ -133,8 +136,12 @@
     </fragment>
     <fragment
         android:id="@+id/aboutUserAdvertFragment"
-        android:name="com.leskov.g_shop_test.views.about_user_advert.AboutUserAdvertFragment"
-        android:label="AboutUserAdvertFragment" />
+        android:name="com.leskov.g_shop_test.views.adverts.about_user_advert.AboutUserAdvertFragment"
+        android:label="AboutUserAdvertFragment" >
+        <action
+            android:id="@+id/action_aboutUserAdvertFragment_to_showUserFragment"
+            app:destination="@id/showUserFragment" />
+    </fragment>
     <fragment
         android:id="@+id/deleteAccountFragment"
         android:name="com.leskov.g_shop_test.views.profile.delete_account.DeleteAccountFragment"
@@ -147,7 +154,7 @@
     </fragment>
     <fragment
         android:id="@+id/editAdvertFragment"
-        android:name="com.leskov.g_shop_test.views.your_advert.edit_advert.EditAdvertFragment"
+        android:name="com.leskov.g_shop_test.views.adverts.your_advert.edit_advert.EditAdvertFragment"
         android:label="EditAdvertFragment" >
         <action
             android:id="@+id/action_editAdvertFragment_to_homeFragment"
@@ -155,4 +162,8 @@
             app:popUpTo="@id/nav_graph.xml"
             app:popUpToInclusive="true" />
     </fragment>
+    <fragment
+        android:id="@+id/showUserFragment"
+        android:name="com.leskov.g_shop_test.views.adverts.about_user_advert.show_user.ShowUserFragment"
+        android:label="ShowUserFragment" />
 </navigation>
