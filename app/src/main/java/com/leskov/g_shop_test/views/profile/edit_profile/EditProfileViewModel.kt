@@ -2,12 +2,14 @@ package com.leskov.g_shop_test.views.profile.edit_profile
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.leskov.g_shop_test.core.extensions.applyIO
 import com.leskov.g_shop_test.core.view_model.BaseViewModel
 import com.leskov.g_shop_test.domain.entitys.UserEntity
 import com.leskov.g_shop_test.domain.repositories.UserRepository
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
+import timber.log.Timber
 
 /**
  *  Created by Android Studio on 6/30/2021 4:02 PM
@@ -44,7 +46,6 @@ class EditProfileViewModel(private val repository: UserRepository) : BaseViewMod
         name: String,
         surName: String,
         city: String,
-        email: String,
         phoneNumber: String,
         userDescription: String
     ) {
@@ -52,7 +53,6 @@ class EditProfileViewModel(private val repository: UserRepository) : BaseViewMod
             name,
             surName,
             city,
-            email,
             phoneNumber,
             userDescription
         ).subscribeOn(Schedulers.io())
@@ -65,5 +65,23 @@ class EditProfileViewModel(private val repository: UserRepository) : BaseViewMod
                     timber.log.Timber.d(it)
                 }
             )
+    }
+
+    fun updateEmail(email: String){
+        disposables + repository.updateEmail(email)
+            .applyIO()
+            .subscribeBy(
+                onComplete = {
+                    _updateUser.postValue(Unit)
+                },
+                onError = {
+                    Timber.d(it)
+                }
+            )
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        disposables.clear()
     }
 }

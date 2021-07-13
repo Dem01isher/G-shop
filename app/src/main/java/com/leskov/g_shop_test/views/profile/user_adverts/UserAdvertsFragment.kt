@@ -1,9 +1,12 @@
 package com.leskov.g_shop_test.views.profile.user_adverts
 
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.View
 import androidx.core.os.bundleOf
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.leskov.g_shop.core.extensions.*
 import com.leskov.g_shop_test.R
 import com.leskov.g_shop_test.core.extensions.nonNullObserve
@@ -25,6 +28,13 @@ class UserAdvertsFragment : BaseVMFragment<UserAdvertsViewModel, FragmentUserAdv
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val orientation = resources.configuration.orientation
+        if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            binding.list.layoutManager = GridLayoutManager(requireContext(), 2)
+        } else {
+            binding.list.layoutManager = LinearLayoutManager(requireContext())
+        }
 
         binding.list.adapter = adapter
 
@@ -53,11 +63,19 @@ class UserAdvertsFragment : BaseVMFragment<UserAdvertsViewModel, FragmentUserAdv
             if (it.isNotEmpty()){
                 adapter.submitList(it)
                 binding.swipe.hideRefresh()
+                binding.listIsEmpty.gone()
+                binding.noAdverts.gone()
             } else {
                 binding.listIsEmpty.visible()
                 binding.noAdverts.visible()
                 binding.swipe.hideRefresh()
+                binding.progressBar.invisible()
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.getUserAdverts()
     }
 }

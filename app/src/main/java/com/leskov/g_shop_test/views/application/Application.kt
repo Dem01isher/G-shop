@@ -26,11 +26,4 @@ class Application : Application(){
             )
         }
     }
-
-//    override val kodein = Kodein.lazy {
-//        import(androidXModule(this@Application))
-//
-//        bind() from singleton { AuthRepository(instance()) }
-//        bind() from singleton { AuthRepositoryImpl() }
-//    }
 }

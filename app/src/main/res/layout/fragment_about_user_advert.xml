@@ -67,10 +67,12 @@
 
                 <TextView
                     android:id="@+id/title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="173dp"
+                    android:layout_height="28dp"
+                    android:maxWidth="173dp"
+                    android:maxHeight="28dp"
                     android:text="@string/template_title"
-                    android:textColor="@color/black"
+                    android:textColor="@color/text_color"
                     android:textSize="24sp"
                     app:layout_constraintEnd_toEndOf="@id/layout"
                     app:layout_constraintHorizontal_bias="0.1"
@@ -85,8 +87,9 @@
                     android:background="@drawable/rounded_corner_text"
                     android:text="@string/price_template"
                     android:textColor="@color/white"
+                    app:layout_constraintHorizontal_bias="0.65"
                     app:layout_constraintEnd_toEndOf="@id/layout"
-                    app:layout_constraintStart_toEndOf="@id/title"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/poster"
                     tools:text="@{item.price}" />
 
@@ -95,12 +98,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/template_description"
-                    tools:text="@{item.description}"
-                    app:layout_constraintVertical_bias="0"
-                    app:layout_constraintTop_toBottomOf="@id/title"
-                    app:layout_constraintStart_toStartOf="@id/layout"
+                    android:textColor="@color/text_color"
                     app:layout_constraintEnd_toEndOf="@id/layout"
-                    app:layout_constraintBottom_toBottomOf="@id/layout"/>
+                    app:layout_constraintStart_toStartOf="@id/layout"
+                    app:layout_constraintTop_toBottomOf="@id/title"
+                    tools:text="@{item.description}" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/show_contact"

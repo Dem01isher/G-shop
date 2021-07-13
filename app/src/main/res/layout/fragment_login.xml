@@ -74,6 +74,7 @@
             android:background="@android:color/transparent"
             android:hint="@string/password"
             app:layout_constraintVertical_bias="0.2"
+            app:endIconMode="password_toggle"
             app:boxBackgroundColor="@android:color/transparent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

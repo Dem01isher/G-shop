@@ -1,10 +1,10 @@
 package com.leskov.g_shop_test.data.sources.remote
 
 import android.net.Uri
-import androidx.lifecycle.MutableLiveData
-import com.google.firebase.auth.*
+import com.google.firebase.auth.EmailAuthProvider
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Source
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.leskov.g_shop_test.domain.entitys.UserEntity
@@ -59,8 +59,8 @@ class RemoteDataSourceImpl(private val retrofit: Retrofit) : RemoteDataSource {
             .whereEqualTo("user_id", FirebaseAuth.getInstance().currentUser?.uid ?: "")
             .get()
             .addOnSuccessListener { success ->
-               val adverts : MutableList<AdvertResponse> = mutableListOf()
-                for (document in success){
+                val adverts: MutableList<AdvertResponse> = mutableListOf()
+                for (document in success) {
                     adverts.add(
                         AdvertResponse(
                             id = document.id,
@@ -90,7 +90,7 @@ class RemoteDataSourceImpl(private val retrofit: Retrofit) : RemoteDataSource {
                     description = result["description"].toString(),
                     price = result["price"].toString() + " $",
                     images = result["images"] as? List<String> ?: listOf(),
-                    user_id = FirebaseAuth.getInstance().currentUser?.uid ?: ""
+                    user_id = result["user_id"].toString()
                 )
                 it.onSuccess(product)
             }
@@ -201,7 +201,7 @@ class RemoteDataSourceImpl(private val retrofit: Retrofit) : RemoteDataSource {
             .document(id)
             .delete()
             .addOnCompleteListener {
-                if (it.isSuccessful){
+                if (it.isSuccessful) {
                     emitter.onComplete()
                 } else {
                     emitter.onError(it.exception?.cause!!)
@@ -215,11 +215,13 @@ class RemoteDataSourceImpl(private val retrofit: Retrofit) : RemoteDataSource {
             .get()
             .addOnSuccessListener { document ->
                 val userData = UserEntity(
+                    id = document.id,
                     name = document["name"].toString(),
                     surName = document["surName"].toString(),
                     phoneNumber = document["phoneNumber"].toString(),
                     city = document["city"].toString(),
-                    userDescription = document["userDescription"].toString()
+                    userDescription = document["userDescription"].toString(),
+                    email = document["email"].toString()
                 )
                 emitter.onSuccess(userData)
             }
@@ -234,11 +236,13 @@ class RemoteDataSourceImpl(private val retrofit: Retrofit) : RemoteDataSource {
             .get()
             .addOnSuccessListener { document ->
                 val userData = UserEntity(
+                    id = document.id,
                     name = document["name"].toString(),
                     surName = document["surName"].toString(),
                     phoneNumber = document["phoneNumber"].toString(),
                     city = document["city"].toString(),
-                    userDescription = document["userDescription"].toString()
+                    userDescription = document["userDescription"].toString(),
+                    email = document["email"].toString()
                 )
                 emitter.onSuccess(userData)
             }
@@ -286,17 +290,18 @@ class RemoteDataSourceImpl(private val retrofit: Retrofit) : RemoteDataSource {
 
     override fun getCurrentUser(): FirebaseUser? = auth.currentUser
 
-    override fun deleteUser(email: String, password: String): Completable = Completable.create { emitter ->
-        val credential = EmailAuthProvider.getCredential(email, password)
-        user?.reauthenticate(credential)
-            ?.addOnSuccessListener {
-                user.delete()
-                emitter.onComplete()
-            }
-            ?.addOnFailureListener {
-                emitter.onError(it)
-            }
-    }
+    override fun deleteUser(email: String, password: String): Completable =
+        Completable.create { emitter ->
+            val credential = EmailAuthProvider.getCredential(email, password)
+            user?.reauthenticate(credential)
+                ?.addOnSuccessListener {
+                    user.delete()
+                    emitter.onComplete()
+                }
+                ?.addOnFailureListener {
+                    emitter.onError(it)
+                }
+        }
 
     override fun logout() = auth.signOut()
 
@@ -304,7 +309,6 @@ class RemoteDataSourceImpl(private val retrofit: Retrofit) : RemoteDataSource {
         name: String,
         surName: String,
         city: String,
-        email: String,
         phoneNumber: String,
         userDescription: String
     ): Completable = Completable.create { emmiter ->
@@ -313,7 +317,6 @@ class RemoteDataSourceImpl(private val retrofit: Retrofit) : RemoteDataSource {
             .update(
                 "name", name,
                 "surName", surName,
-                "email", email,
                 "city", city,
                 "phoneNumber", phoneNumber,
                 "userDescription", userDescription
@@ -324,5 +327,27 @@ class RemoteDataSourceImpl(private val retrofit: Retrofit) : RemoteDataSource {
             .addOnFailureListener {
                 emmiter.onError(it)
             }
+    }
+
+    override fun updateEmail(email: String): Completable = Completable.create { emitter ->
+        user.let {
+            it?.updateEmail(email)
+                ?.addOnSuccessListener {
+                    emitter.onComplete()
+                }
+                ?.addOnFailureListener {
+                    emitter.onError(it)
+                }
+            db.collection("users")
+                .document(it?.uid ?: "")
+                .update("email", email)
+                .addOnCompleteListener {
+                    if (it.isSuccessful) {
+                        emitter.onComplete()
+                    } else {
+                        emitter.onError(it.exception!!.fillInStackTrace())
+                    }
+                }
+        }
     }
 }

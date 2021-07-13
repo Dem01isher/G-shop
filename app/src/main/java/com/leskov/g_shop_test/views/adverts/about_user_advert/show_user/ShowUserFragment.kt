@@ -51,7 +51,7 @@ class ShowUserFragment : BaseVMFragment<ShowUserViewModel, FragmentShowUserBindi
         viewModel.user.nonNullObserve(viewLifecycleOwner){
             binding.userName.text = it.name + " " + it.surName
             binding.town.text = it.city
-            binding.emailAdress.text = auth.currentUser!!.email.toString()
+            binding.emailAdress.text = it.email
             binding.phoneNumber.text = it.phoneNumber
             binding.userDescription.text = it.userDescription
         }

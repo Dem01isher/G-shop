@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextUtils
 import android.text.TextWatcher
+import android.view.KeyEvent
 import android.view.View
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -79,10 +80,21 @@ class CreateAdvertFragment : BaseVMFragment<CreateAdvertViewModel, FragmentCreat
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 binding.descriptionLayout.error = null
+
             }
 
             override fun afterTextChanged(s: Editable?) {}
         }
+
+        val listener = object : View.OnKeyListener{
+            override fun onKey(v: View?, keyCode: Int, event: KeyEvent?): Boolean {
+                if (keyCode == KeyEvent.KEYCODE_ENTER) return true
+                return false
+            }
+
+        }
+
+        binding.description.setOnKeyListener(listener)
 
         binding.headline.addTextChangedListener(headlineTextWatcher)
         binding.price.addTextChangedListener(priceTextWatcher)

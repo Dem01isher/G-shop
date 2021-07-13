@@ -66,6 +66,7 @@ class HomeFragment : BaseVMFragment<HomeViewModel, FragmentHomeBinding>() {
             binding.swipe.showRefresh()
             binding.noAdverts.gone()
             binding.listIsEmpty.gone()
+            binding.progressBar.gone()
             viewModel.getAdverts()
         }
 
@@ -76,13 +77,17 @@ class HomeFragment : BaseVMFragment<HomeViewModel, FragmentHomeBinding>() {
 
     private fun initObservers() {
         viewModel.products.nonNullObserve(viewLifecycleOwner) {
-            if (it.isNotEmpty()) {
+            if (it.isNotEmpty()){
                 adapter.submitList(it)
                 binding.swipe.hideRefresh()
-                binding.progressBar.invisible()
+                binding.listIsEmpty.gone()
+                binding.noAdverts.gone()
+                binding.progressBar.gone()
             } else {
                 binding.listIsEmpty.visible()
                 binding.noAdverts.visible()
+                binding.swipe.hideRefresh()
+                binding.progressBar.gone()
             }
         }
     }

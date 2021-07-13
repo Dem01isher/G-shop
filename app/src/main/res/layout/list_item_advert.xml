@@ -13,10 +13,9 @@
         android:id="@+id/item"
         app:cardCornerRadius="10dp"
         android:layout_marginTop="6dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginStart="12dp"
         android:background="?selectableItemBackground"
-        android:layout_width="wrap_content"
+        android:layout_width="391dp"
         android:layout_height="wrap_content">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -36,12 +35,14 @@
 
             <TextView
                 android:id="@+id/title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="173dp"
+                android:layout_height="28dp"
                 android:text="@string/title_template"
                 tools:text="@{advert.title}"
-                android:textColor="@color/black"
+                android:textColor="@color/text_color"
                 android:textSize="24sp"
+                android:maxWidth="173dp"
+                android:maxHeight="28dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/poster"
                 app:layout_constraintTop_toTopOf="parent"
@@ -53,6 +54,7 @@
                 android:layout_height="61dp"
                 android:text="The Gibson Les Paul is a solid body electric guitar that was first sold by the Gibson Guitar Corporation in 1952. The Les Paul was designed by ..."
                 tools:text="@{advert.description}"
+                android:maxWidth="220dp"
                 app:layout_constraintHorizontal_bias="0.8"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/poster"

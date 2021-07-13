@@ -6,9 +6,11 @@ package com.leskov.g_shop_test.domain.entitys
  */
 
 data class UserEntity(
+    val id : String,
     val name : String,
     val surName : String,
     val city : String,
     val phoneNumber : String,
+    val email : String,
     val userDescription : String
 )

@@ -24,20 +24,22 @@ class RegistrationDataViewModel(private val repository: UserRepository) : BaseVi
         loading.postValue(false)
     }
 
-    fun fetchLoading():LiveData<Boolean> = loading
+    fun fetchLoading(): LiveData<Boolean> = loading
 
     fun createUser(
+        id : String,
         name: String,
         surName: String,
         city: String,
         phoneNumber: String,
-        userDescription: String
+        userDescription: String,
+        email: String
     ) {
 
         loading.postValue(true)
         disposables + repository.createUser(
             UserEntity(
-                name, surName, city, phoneNumber, userDescription
+                "", name, surName, city, phoneNumber, userDescription, email
             )
         ).applyIO()
             .subscribeBy(
@@ -50,7 +52,6 @@ class RegistrationDataViewModel(private val repository: UserRepository) : BaseVi
             )
         loading.postValue(false)
     }
-
 
 
     override fun onCleared() {

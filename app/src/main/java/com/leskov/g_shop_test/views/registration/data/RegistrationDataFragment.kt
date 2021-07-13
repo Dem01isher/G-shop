@@ -121,9 +121,11 @@ class RegistrationDataFragment :
             } else {
                 observerLoadingProgress()
                 viewModel.createUser(
+                    auth.currentUser?.uid ?: "",
                     binding.name.text.toString(),
                     binding.surname.text.toString(), binding.city.text.toString(),
-                    binding.phoneNumber.text.toString(), ""
+                    binding.phoneNumber.text.toString(), "",
+                    auth.currentUser?.email ?: ""
                 )
             }
         }

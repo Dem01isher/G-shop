@@ -1,15 +1,17 @@
 package com.leskov.g_shop_test.views.profile.edit_profile
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextUtils
+import android.text.TextWatcher
+import android.util.Patterns
 import android.view.View
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
-import com.leskov.g_shop_test.core.extensions.nonNullObserve
 import com.leskov.g_shop.core.extensions.setOnClickWithDebounce
-import com.leskov.g_shop_test.core.fragment.BaseVMFragment
 import com.leskov.g_shop_test.R
+import com.leskov.g_shop_test.core.extensions.nonNullObserve
+import com.leskov.g_shop_test.core.fragment.BaseVMFragment
 import com.leskov.g_shop_test.databinding.FragmentEditProfileBinding
 import com.leskov.g_shop_test.views.dialogs.DeleteAccountDialog
 import kotlin.reflect.KClass
@@ -21,11 +23,11 @@ class EditProfileFragment : BaseVMFragment<EditProfileViewModel, FragmentEditPro
 
     override val layoutId: Int = R.layout.fragment_edit_profile
 
-    private val auth : FirebaseAuth by lazy {
+    private val auth: FirebaseAuth by lazy {
         FirebaseAuth.getInstance()
     }
 
-    private val user : FirebaseUser = auth.currentUser!!
+    private val user: FirebaseUser = auth.currentUser!!
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -34,25 +36,46 @@ class EditProfileFragment : BaseVMFragment<EditProfileViewModel, FragmentEditPro
         initListeners()
     }
 
-    private fun initListeners(){
+    private fun initListeners() {
 
-        binding.save.setOnClickWithDebounce {
-            viewModel.updateUser(
-                binding.name.text.toString(),
-                binding.surname.text.toString(),
-                binding.city.text.toString(),
-                binding.emailAdress.text.toString(),
-                binding.phoneNumber.text.toString(),
-                binding.description.text.toString()
-            )
+        val listener = object : TextWatcher{
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                binding.emailLayout.error = null
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+            }
+
         }
 
+        binding.emailAdress.addTextChangedListener(listener)
+
+        binding.save.setOnClickWithDebounce {
+
+            if (validateEmail()){
+                binding.emailLayout.error = getString(R.string.invalid_email)
+                showMessage(R.string.invalid_email)
+            } else {
+                binding.emailLayout.error = null
+                viewModel.updateUser(
+                    binding.name.text.toString(),
+                    binding.surname.text.toString(),
+                    binding.city.text.toString(),
+                    userDescription = binding.description.text.toString(),
+                    phoneNumber = binding.phoneNumber.text.toString()
+                )
+                viewModel.updateEmail(binding.emailAdress.text.toString())
+            }
+        }
         binding.toolbar.setNavigationOnClickListener {
             navController.popBackStack()
         }
         binding.toolbar.setOnMenuItemClickListener {
-            when (it.itemId){
-                R.id.delete -> DeleteAccountDialog{
+            when (it.itemId) {
+                R.id.delete -> DeleteAccountDialog {
                     navController.navigate(R.id.action_editProfileFragment_to_deleteAccountFragment)
                 }.show(parentFragmentManager, "")
             }
@@ -60,8 +83,8 @@ class EditProfileFragment : BaseVMFragment<EditProfileViewModel, FragmentEditPro
         }
     }
 
-    private fun initObservers(){
-        viewModel.user.nonNullObserve(viewLifecycleOwner){
+    private fun initObservers() {
+        viewModel.user.nonNullObserve(viewLifecycleOwner) {
             binding.name.setText(it.name)
             binding.surname.setText(it.surName)
             binding.city.setText(it.city)
@@ -69,8 +92,13 @@ class EditProfileFragment : BaseVMFragment<EditProfileViewModel, FragmentEditPro
             binding.phoneNumber.setText(it.phoneNumber)
             binding.description.setText(it.userDescription)
         }
-        viewModel.updateUser.nonNullObserve(viewLifecycleOwner){
+        viewModel.updateUser.nonNullObserve(viewLifecycleOwner) {
             navController.popBackStack()
         }
+    }
+
+    private fun validateEmail(): Boolean {
+        return (!Patterns.EMAIL_ADDRESS.matcher(binding.emailAdress.text.toString()).matches()
+                || TextUtils.isEmpty(binding.emailAdress.text.toString()))
     }
 }

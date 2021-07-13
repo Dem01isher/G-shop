@@ -27,13 +27,14 @@ class UserRepositoryImpl(private val remoteDataSource: RemoteDataSource) : UserR
         name: String,
         surName: String,
         city: String,
-        email: String,
         phoneNumber: String,
         userDescription: String
     ): Completable =
-        remoteDataSource.updateProfile(name, surName, city, email, phoneNumber, userDescription)
+        remoteDataSource.updateProfile(name, surName, city, phoneNumber, userDescription)
 
     override fun getCurrentUser(): FirebaseUser? = remoteDataSource.getCurrentUser()
+
+    override fun updateEmail(email: String): Completable = remoteDataSource.updateEmail(email)
 
     override fun getUserByAdvertId(userId: String): Single<UserEntity> =
         remoteDataSource.getUserByAdvertId(userId)

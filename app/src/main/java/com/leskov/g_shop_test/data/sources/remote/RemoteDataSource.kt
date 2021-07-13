@@ -45,10 +45,11 @@ interface RemoteDataSource {
         name: String,
         surName: String,
         city: String,
-        email: String,
         phoneNumber: String,
         userDescription: String
     ): Completable
+
+    fun updateEmail(email: String) : Completable
 
     fun getCurrentUser(): FirebaseUser?
 
