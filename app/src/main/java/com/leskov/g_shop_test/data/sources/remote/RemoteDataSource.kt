@@ -51,6 +51,8 @@ interface RemoteDataSource {
 
     fun updateEmail(email: String) : Completable
 
+    fun uploadUserImage(imageUri: Uri) : Single<String>
+
     fun getCurrentUser(): FirebaseUser?
 
     fun deleteUser(email: String, password: String) : Completable

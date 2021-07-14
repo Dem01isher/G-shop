@@ -1,5 +1,6 @@
 package com.leskov.g_shop_test.data.repositories
 
+import android.net.Uri
 import com.google.firebase.auth.FirebaseUser
 import com.leskov.g_shop_test.data.sources.remote.RemoteDataSource
 import com.leskov.g_shop_test.domain.entitys.UserEntity
@@ -35,6 +36,8 @@ class UserRepositoryImpl(private val remoteDataSource: RemoteDataSource) : UserR
     override fun getCurrentUser(): FirebaseUser? = remoteDataSource.getCurrentUser()
 
     override fun updateEmail(email: String): Completable = remoteDataSource.updateEmail(email)
+
+    override fun uploadUserImage(imageUri: Uri): Single<String> = remoteDataSource.uploadUserImage(imageUri)
 
     override fun getUserByAdvertId(userId: String): Single<UserEntity> =
         remoteDataSource.getUserByAdvertId(userId)

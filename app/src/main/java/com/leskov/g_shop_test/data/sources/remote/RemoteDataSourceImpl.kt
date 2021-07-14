@@ -7,6 +7,7 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
+import com.leskov.g_shop_test.core.extensions.applyIO
 import com.leskov.g_shop_test.domain.entitys.UserEntity
 import com.leskov.g_shop_test.domain.responses.AdvertResponse
 import com.leskov.g_shop_test.domain.responses.ImageResponse
@@ -221,7 +222,8 @@ class RemoteDataSourceImpl(private val retrofit: Retrofit) : RemoteDataSource {
                     phoneNumber = document["phoneNumber"].toString(),
                     city = document["city"].toString(),
                     userDescription = document["userDescription"].toString(),
-                    email = document["email"].toString()
+                    email = document["email"].toString(),
+                    photo = document["photo"].toString()
                 )
                 emitter.onSuccess(userData)
             }
@@ -242,7 +244,8 @@ class RemoteDataSourceImpl(private val retrofit: Retrofit) : RemoteDataSource {
                     phoneNumber = document["phoneNumber"].toString(),
                     city = document["city"].toString(),
                     userDescription = document["userDescription"].toString(),
-                    email = document["email"].toString()
+                    email = document["email"].toString(),
+                    photo = document["photo"].toString()
                 )
                 emitter.onSuccess(userData)
             }
@@ -328,6 +331,65 @@ class RemoteDataSourceImpl(private val retrofit: Retrofit) : RemoteDataSource {
                 emmiter.onError(it)
             }
     }
+
+    override fun uploadUserImage(imageUri: Uri): Single<String> {
+        val storage: FirebaseStorage =
+            FirebaseStorage.getInstance("gs://g-shop-test.appspot.com")
+        val basePath = "user_image"
+        val userFolder = FirebaseAuth.getInstance().currentUser?.uid!!
+
+        return Single.create<String> {
+            val imageName = UUID.randomUUID().toString()
+            val newImageReference: StorageReference = storage.reference.child(
+                "$basePath/$userFolder/${imageName}"
+            )
+            val uploadTask = newImageReference.putFile(imageUri)
+            uploadTask.continueWithTask {
+                if (!uploadTask.isSuccessful) {
+                    uploadTask.exception?.let {
+                        throw it
+                    }
+                }
+                newImageReference.downloadUrl.addOnSuccessListener {
+                    val url = it.toString()
+                    db.collection("users")
+                        .document(FirebaseAuth.getInstance().currentUser?.uid!! ?: "")
+                        .update("photo", url)
+                }
+
+            }.addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    it.onSuccess(task.result.toString())
+
+                } else {
+                    task.exception?.let {
+                        throw it
+                    }
+                }
+            }
+        }.applyIO()
+    }
+
+//            storage.getReference(userFolder)
+//                .putFile(imageUri)
+//                .addOnSuccessListener {
+//                    emitter.onSuccess(it.task.toString())
+//                }
+//                .addOnFailureListener{
+//                    emitter.onError(it.fillInStackTrace())
+//                }
+//            db.collection("users")
+//                .document(FirebaseAuth.getInstance().currentUser?.uid ?: "")
+//                .update("photo", userFolder)
+//                .addOnCompleteListener {
+//                    if (it.isSuccessful){
+//                        emitter.onSuccess(it.result.toString())
+//                    } else {
+//                        emitter.onError(it.exception!!.fillInStackTrace())
+//                    }
+//                }
+//        }
+//    }
 
     override fun updateEmail(email: String): Completable = Completable.create { emitter ->
         user.let {

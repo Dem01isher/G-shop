@@ -125,7 +125,8 @@ class RegistrationDataFragment :
                     binding.name.text.toString(),
                     binding.surname.text.toString(), binding.city.text.toString(),
                     binding.phoneNumber.text.toString(), "",
-                    auth.currentUser?.email ?: ""
+                    auth.currentUser?.email ?: "",
+                    image = (auth.currentUser?.photoUrl ?: "") as String
                 )
             }
         }

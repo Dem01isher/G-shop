@@ -27,19 +27,27 @@ class RegistrationDataViewModel(private val repository: UserRepository) : BaseVi
     fun fetchLoading(): LiveData<Boolean> = loading
 
     fun createUser(
-        id : String,
+        id: String,
         name: String,
         surName: String,
         city: String,
         phoneNumber: String,
         userDescription: String,
-        email: String
+        email: String,
+        image: String
     ) {
 
         loading.postValue(true)
         disposables + repository.createUser(
             UserEntity(
-                "", name, surName, city, phoneNumber, userDescription, email
+                "",
+                name = name,
+                surName = surName,
+                city = city,
+                phoneNumber = phoneNumber,
+                userDescription = userDescription,
+                email = email,
+                photo = image
             )
         ).applyIO()
             .subscribeBy(

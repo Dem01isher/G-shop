@@ -1,5 +1,6 @@
 package com.leskov.g_shop_test.domain.repositories
 
+import android.net.Uri
 import com.google.firebase.auth.FirebaseUser
 import com.leskov.g_shop_test.domain.entitys.UserEntity
 import io.reactivex.Completable
@@ -29,6 +30,8 @@ interface UserRepository {
     ): Completable
 
     fun updateEmail(email: String) : Completable
+
+    fun uploadUserImage(imageUri: Uri) : Single<String>
 
     fun getCurrentUser() : FirebaseUser?
 

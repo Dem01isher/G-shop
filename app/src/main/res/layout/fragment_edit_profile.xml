@@ -181,11 +181,17 @@
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/description"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:maxLength="500"
+                        android:layout_height="wrap_content"
                         android:imeOptions="actionNext"
-                        android:inputType="textMultiLine"
-                        android:scrollbars="vertical" />
+                        android:inputType="textCapSentences|textMultiLine"
+                        android:maxLength="1000"
+                        android:lines="@null"
+                        android:scrollHorizontally="false"
+                        android:verticalScrollbarPosition="defaultPosition"
+                        android:overScrollMode="always"
+                        android:scrollbarStyle="insideInset"
+                        android:scrollbars="vertical"
+                        android:singleLine="false" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
