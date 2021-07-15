@@ -1,8 +1,11 @@
 package com.leskov.g_shop_test.views.adverts.your_advert.edit_advert
 
 import android.os.Bundle
+import android.text.TextUtils
 import android.view.View
+import com.leskov.g_shop.core.extensions.gone
 import com.leskov.g_shop.core.extensions.setOnClickWithDebounce
+import com.leskov.g_shop.core.extensions.visible
 import com.leskov.g_shop_test.R
 import com.leskov.g_shop_test.core.extensions.nonNullObserve
 import com.leskov.g_shop_test.core.fragment.BaseVMFragment
@@ -17,7 +20,12 @@ class EditAdvertFragment : BaseVMFragment<EditAdvertViewModel, FragmentEditAdver
 
     override val layoutId: Int = R.layout.fragment_edit_advert
 
-    private val adapter = SelectedImageAdapter {}
+    private val adapter = SelectedImageAdapter{
+        binding.progressBar.visible()
+        viewModel.removeImage(arguments?.getString("edit_advert") ?: "", it)
+        viewModel.getAdvertById(arguments?.getString("edit_advert") ?: "")
+        binding.progressBar.gone()
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -26,6 +34,16 @@ class EditAdvertFragment : BaseVMFragment<EditAdvertViewModel, FragmentEditAdver
 
         binding.selectImage.adapter = adapter
 
+
+
+//        imageAdapter.setOnAddImageListener {
+//            pickImage.launch("image/*")
+//        }
+        initListeners()
+        initObservers()
+    }
+
+    private fun initListeners(){
         binding.toolbar.setNavigationOnClickListener {
             navController.popBackStack()
         }
@@ -45,9 +63,8 @@ class EditAdvertFragment : BaseVMFragment<EditAdvertViewModel, FragmentEditAdver
                 binding.price.text.toString(),
                 binding.description.text.toString()
             )
-        }
 
-        initObservers()
+        }
     }
 
     private fun initObservers() {
@@ -57,10 +74,18 @@ class EditAdvertFragment : BaseVMFragment<EditAdvertViewModel, FragmentEditAdver
             binding.description.setText(it.description)
             binding.price.setText(it.price)
 
+
+            adapter.submitList(it.images)
         }
 
         viewModel.advert.nonNullObserve(viewLifecycleOwner) {
             navController.navigate(R.id.action_editAdvertFragment_to_homeFragment)
         }
+    }
+
+    private fun checkFields() : Boolean{
+        return (TextUtils.isEmpty(binding.description.text.toString())
+                && TextUtils.isEmpty(binding.headline.text.toString())
+                && TextUtils.isEmpty(binding.price.text.toString()))
     }
 }

@@ -20,6 +20,8 @@ abstract class BaseListAdapter<T, Binding : ViewDataBinding>(
 
     protected abstract val layoutId: Int
 
+    private var onItemClickListener: ((T) -> Unit)? = null
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BindingHolder<Binding> =
         BindingHolder(
             DataBindingUtil.inflate(LayoutInflater.from(parent.context), layoutId, parent, false)
@@ -32,4 +34,9 @@ abstract class BaseListAdapter<T, Binding : ViewDataBinding>(
             }
         }
     }
+
+    protected open fun onClick(currentItem: T) {
+        onItemClickListener?.invoke(currentItem)
+    }
+
 }

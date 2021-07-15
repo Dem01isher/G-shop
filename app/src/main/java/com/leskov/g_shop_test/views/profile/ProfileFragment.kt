@@ -89,6 +89,9 @@ class ProfileFragment : BaseVMFragment<ProfileViewModel, FragmentProfileBinding>
 //                Glide.with(this).load(it.photo).transform(CircleCrop()).into(binding.userImage)
 //            }
         }
+        viewModel.image.nonNullObserve(viewLifecycleOwner){ image ->
+            viewModel.getUser()
+        }
     }
 
 

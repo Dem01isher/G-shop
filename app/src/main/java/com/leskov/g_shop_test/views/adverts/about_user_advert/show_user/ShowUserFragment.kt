@@ -54,14 +54,16 @@ class ShowUserFragment : BaseVMFragment<ShowUserViewModel, FragmentShowUserBindi
             binding.emailAdress.text = it.email
             binding.phoneNumber.text = it.phoneNumber
             binding.userDescription.text = it.userDescription
-        }
-        val user = auth.currentUser
-        if(user?.photoUrl == null){
+
+            if(it.photo == null){
             Glide.with(this).load("https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg").transform(
                 CircleCrop()
             ).into(binding.userImage)
         }else{
-            Glide.with(this).load(user?.photoUrl).transform(CircleCrop()).into(binding.userImage)
+            Glide.with(this).load(it.photo).transform(CircleCrop()).into(binding.userImage)
         }
+        }
+        val user = auth.currentUser
+
     }
 }

@@ -6,5 +6,6 @@ package com.leskov.g_shop_test.domain.responses
  */
 
 data class ImageResponse(
+    val position: Int,
     val images : List<String>
 )

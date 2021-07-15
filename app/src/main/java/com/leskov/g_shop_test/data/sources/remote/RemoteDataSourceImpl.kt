@@ -4,7 +4,9 @@ import android.net.Uri
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.leskov.g_shop_test.core.extensions.applyIO
@@ -42,7 +44,7 @@ class RemoteDataSourceImpl(private val retrofit: Retrofit) : RemoteDataSource {
                             id = document.id,
                             title = document["title"].toString(),
                             description = document["description"].toString(),
-                            price = document["price"].toString() + " $",
+                            price = document["price"].toString(),
                             images = document["images"] as? List<String> ?: listOf(),
                             user_id = document["user_id"].toString()
                         )
@@ -67,7 +69,7 @@ class RemoteDataSourceImpl(private val retrofit: Retrofit) : RemoteDataSource {
                             id = document.id,
                             title = document["title"].toString(),
                             description = document["description"].toString(),
-                            price = document["price"].toString() + " $",
+                            price = document["price"].toString(),
                             images = document["images"] as? List<String> ?: listOf(),
                             user_id = FirebaseAuth.getInstance().currentUser?.uid ?: ""
                         )
@@ -89,7 +91,7 @@ class RemoteDataSourceImpl(private val retrofit: Retrofit) : RemoteDataSource {
                     id = result.id,
                     title = result["title"].toString(),
                     description = result["description"].toString(),
-                    price = result["price"].toString() + " $",
+                    price = result["price"].toString(),
                     images = result["images"] as? List<String> ?: listOf(),
                     user_id = result["user_id"].toString()
                 )
@@ -118,7 +120,7 @@ class RemoteDataSourceImpl(private val retrofit: Retrofit) : RemoteDataSource {
         headline: String,
         price: String,
         description: String
-    ): Completable = Completable.create {
+    ): Completable = Completable.create { emitter ->
         db.collection("adverts")
             .document(id)
             .update(
@@ -128,13 +130,14 @@ class RemoteDataSourceImpl(private val retrofit: Retrofit) : RemoteDataSource {
             )
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    it.onComplete()
+                    emitter.onComplete()
                 } else {
                     task.exception?.let {
                         throw it
                     }
                 }
             }
+
     }
 
     override fun uploadImages(images: List<Uri>): Single<List<String>> {
@@ -177,7 +180,7 @@ class RemoteDataSourceImpl(private val retrofit: Retrofit) : RemoteDataSource {
             .document(id)
             .get()
             .addOnSuccessListener { complete ->
-                val images = ImageResponse(complete["images"] as? List<String> ?: listOf())
+                val images = ImageResponse(0,complete["images"] as? List<String> ?: listOf())
                 emitter.onSuccess(listOf(images))
             }
             .addOnFailureListener {
@@ -329,6 +332,19 @@ class RemoteDataSourceImpl(private val retrofit: Retrofit) : RemoteDataSource {
             }
             .addOnFailureListener {
                 emmiter.onError(it)
+            }
+    }
+
+    override fun removeImage(id: String,urlOfImage: String): Completable = Completable.create { emitter ->
+        db.collection("adverts")
+            .document(id)
+            .update("images", FieldValue.arrayRemove(urlOfImage))
+            .addOnCompleteListener {
+                if (!it.isSuccessful){
+                    throw it.exception!!
+                } else {
+                    emitter.onComplete()
+                }
             }
     }
 

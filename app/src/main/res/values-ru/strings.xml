@@ -1,26 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">G-shop</string>
-    <string name="login">Log in</string>
-    <string name="registration">Registration</string>
+    <string name="login">Логин</string>
+    <string name="registration">Регистрация</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
-    <string name="continue_register">Continue</string>
-    <string name="name">Name</string>
-    <string name="surname">Surname</string>
-    <string name="city">City</string>
-    <string name="phone_number">Phone Number</string>
+    <string name="continue_register">Продолжить</string>
+    <string name="name">Имя</string>
+    <string name="surname">Фамилия</string>
+    <string name="city">Город</string>
+    <string name="phone_number">Номер телефона</string>
     <string name="register">Register</string>
     <string name="title_template">Gibson Les Paul</string>
     <string name="price_template">1000 $</string>
     <string name="create_advert">Create Advert</string>
-    <string name="headline">Headline</string>
-    <string name="add_photos">Add Photos</string>
-    <string name="description">Description</string>
-    <string name="create">Create</string>
+    <string name="headline">Заголовок</string>
+    <string name="add_photos">Добавить фото</string>
+    <string name="description">Описание</string>
+    <string name="create">Создать</string>
     <string name="home">Home</string>
-    <string name="profile">Profile</string>
-    <string name="price">Price</string>
+    <string name="profile">Профиль</string>
+    <string name="price">Цена</string>
     <string name="template_description">The Gibson Les Paul is a solid body electric guitar that was first sold by the Gibson Guitar Corporation in 1952. The Les Paul was designed by Gibson president Ted McCarty, factory manager John Huis and their team with input from and endorsement by guitarist Les Paul. Its typical design features a solid maho</string>
 
     <string name="invalid_email">Invalid email</string>
@@ -34,12 +34,12 @@
     <string name="password_is_weak">Password should be at least 6 characters</string>
     <string name="complete_fields">"Please, complete all fields"</string>
     <string name="complete_this_field">Complete this field</string>
-    <string name="your_advert">Your Advert</string>
+    <string name="your_advert">Ваше объявление</string>
     <string name="template_title">Gibson Les Paul</string>
-    <string name="profile_editing">Profile Editing</string>
-    <string name="your_adverts">Your Adverts</string>
-    <string name="about_yourself">About Yourself</string>
-    <string name="save">Save</string>
+    <string name="profile_editing">Редактирование профиля</string>
+    <string name="your_adverts">Ваши объявления</string>
+    <string name="about_yourself">О пользователе:</string>
+    <string name="save">Сохранить</string>
 
     <string name="firebase_auth_invalid_user_exception">"User does not exist or has been deleted"</string>
     <string name="firebase_auth_invalid_credentials_exception">"Неправильний пароль або користувач не має пароля "</string>
@@ -59,10 +59,10 @@
     <string name="complete_descirption_field">Complete description field</string>
     <string name="complete_city_field">Complete city field</string>
     <string name="complete_phone_number_field">Complete phone number field</string>
-    <string name="advert">Advert</string>
-    <string name="show_contact">Show Contact</string>
-    <string name="delete_account">Delete Account</string>
-    <string name="delete_user_description">You are about to delete your account, which provides access to the show of your ads. You will no longer be able to use them, and all data in your account will be lost.</string>
-    <string name="edit_advert">Advert Editing</string>
-    <string name="call">Call</string>
+    <string name="advert">Объявление</string>
+    <string name="show_contact">Показать контакты</string>
+    <string name="delete_account">Удалить аккаунт</string>
+    <string name="delete_user_description">Вы собираетесь удалить свою учетную запись, которая дает доступ к показу вашей рекламы. Вы больше не сможете их использовать, и все данные в вашей учетной записи будут потеряны.</string>
+    <string name="edit_advert">Редактирование объявления</string>
+    <string name="call">Позвонить</string>
 </resources>

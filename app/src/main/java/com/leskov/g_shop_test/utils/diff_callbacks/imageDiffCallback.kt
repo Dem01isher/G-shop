@@ -8,11 +8,11 @@ import com.leskov.g_shop_test.domain.responses.ImageResponse
  *  Developer: Sergey Leskov
  */
  
-val imageDiffCallback = object : DiffUtil.ItemCallback<ImageResponse>(){
-    override fun areItemsTheSame(oldItem: ImageResponse, newItem: ImageResponse): Boolean =
+val imageDiffCallback = object : DiffUtil.ItemCallback<String>(){
+    override fun areItemsTheSame(oldItem: String, newItem: String): Boolean =
         oldItem == newItem
 
-    override fun areContentsTheSame(oldItem: ImageResponse, newItem: ImageResponse): Boolean =
+    override fun areContentsTheSame(oldItem: String, newItem: String): Boolean =
         oldItem == newItem
 
 }

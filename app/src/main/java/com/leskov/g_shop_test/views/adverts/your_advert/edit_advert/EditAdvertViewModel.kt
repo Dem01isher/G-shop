@@ -24,12 +24,28 @@ class EditAdvertViewModel(private val repository: AdvertRepository) : BaseViewMo
     private val _advertById = MutableLiveData<AdvertResponse>()
     val advertById: LiveData<AdvertResponse> = _advertById
 
+    private val _image = MutableLiveData<Unit>()
+    val image : LiveData<Unit> = _image
+
     fun deleteAdvert(id: String){
         disposables + repository.deleteAdvert(id)
             .applyIO()
             .subscribeBy(
                 onComplete = {
                     _advert.postValue(Unit)
+                },
+                onError = {
+                    Timber.d(it)
+                }
+            )
+    }
+
+    fun removeImage(id: String, indexOfImage: String){
+        disposables + repository.removeImage(id, indexOfImage)
+            .applyIO()
+            .subscribeBy(
+                onComplete = {
+                    _image.postValue(Unit)
                 },
                 onError = {
                     Timber.d(it)

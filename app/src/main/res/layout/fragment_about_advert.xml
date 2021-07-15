@@ -55,17 +55,28 @@
                     app:layout_constraintStart_toStartOf="@id/layout"
                     app:layout_constraintEnd_toEndOf="@id/layout"/>
 
+                <ImageView
+                    android:id="@+id/no_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="365dp"
+                    android:contentDescription="@null"
+                    android:visibility="gone"
+                    app:layout_constraintTop_toTopOf="@id/layout"
+                    app:layout_constraintStart_toStartOf="@id/layout"
+                    app:layout_constraintEnd_toEndOf="@id/layout"/>
+
                 <TextView
                     android:id="@+id/title"
-                    android:layout_width="173dp"
-                    android:layout_height="28dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:maxWidth="173dp"
                     android:maxHeight="28dp"
                     tools:text="@{item.title}"
                     android:textSize="24sp"
                     android:textColor="@color/text_color"
                     android:text="@string/template_title"
-                    app:layout_constraintHorizontal_bias="0.1"
+                    android:layout_marginTop="8dp"
+                    app:layout_constraintHorizontal_bias="0.04"
                     app:layout_constraintTop_toBottomOf="@id/poster"
                     app:layout_constraintStart_toStartOf="@id/layout"
                     app:layout_constraintEnd_toEndOf="@id/layout"
@@ -75,14 +86,16 @@
                     android:id="@+id/price"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/price_template"
-                    tools:text="@{item.price}"
-                    android:textColor="@color/white"
                     android:background="@drawable/rounded_corner_text"
-                    app:layout_constraintTop_toBottomOf="@id/poster"
-                    app:layout_constraintStart_toEndOf="@id/title"
+                    android:text="@string/price_template"
+                    android:textColor="@color/white"
+                    android:layout_marginTop="16dp"
+                    app:layout_constraintHorizontal_bias="0.05"
+                    app:layout_constraintBottom_toTopOf="@id/description"
                     app:layout_constraintEnd_toEndOf="@id/layout"
-                    app:layout_constraintBottom_toTopOf="@id/description"/>
+                    app:layout_constraintStart_toEndOf="@+id/title"
+                    app:layout_constraintTop_toBottomOf="@id/poster"
+                    tools:text="@{item.price}" />
 
                 <TextView
                     android:id="@+id/description"
@@ -90,7 +103,9 @@
                     android:layout_height="wrap_content"
                     android:text="@string/template_description"
                     tools:text="@{item.description}"
+                    android:maxWidth="391dp"
                     android:textColor="@color/text_color"
+                    app:layout_constraintHorizontal_bias="0.048"
                     app:layout_constraintTop_toBottomOf="@id/title"
                     app:layout_constraintStart_toStartOf="@id/layout"
                     app:layout_constraintEnd_toEndOf="@id/layout"

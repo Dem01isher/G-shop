@@ -37,7 +37,9 @@ class UserAdvertsAdapter(private val click: (AdvertResponse) -> Unit) :
 
         val item = getItem(holder.adapterPosition)
 
-        holder.binding.advert = item
+        holder.binding.title.text = item.title
+        holder.binding.description.text = item.description
+        holder.binding.price.text = "${item.price} $"
 
         if (item.images.isEmpty()) {
             Glide.with(holder.itemView.context)

@@ -1,13 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <data>
-        <variable
-            name="advert"
-            type="com.leskov.g_shop_test.domain.responses.AdvertResponse" />
-    </data>
 
     <androidx.cardview.widget.CardView
         android:id="@+id/item"
@@ -15,11 +9,11 @@
         android:layout_marginTop="6dp"
         android:layout_marginStart="12dp"
         android:background="?selectableItemBackground"
-        android:layout_width="391dp"
+        android:layout_width="370dp"
         android:layout_height="wrap_content">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="wrap_content"
+            android:layout_width="370dp"
             android:layout_height="wrap_content">
 
             <ImageView
@@ -38,7 +32,6 @@
                 android:layout_width="173dp"
                 android:layout_height="28dp"
                 android:text="@string/title_template"
-                tools:text="@{advert.title}"
                 android:textColor="@color/text_color"
                 android:textSize="24sp"
                 android:maxWidth="173dp"
@@ -55,7 +48,6 @@
                 android:layout_width="220dp"
                 android:layout_height="61dp"
                 android:text="The Gibson Les Paul is a solid body electric guitar that was first sold by the Gibson Guitar Corporation in 1952. The Les Paul was designed by ..."
-                tools:text="@{advert.description}"
                 android:maxWidth="220dp"
                 android:ellipsize="end"
                 android:maxLines="3"
@@ -70,7 +62,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/price_template"
-                tools:text="@{advert.price}"
                 android:textColor="@color/white"
                 android:background="@drawable/rounded_corner_text"
                 app:layout_constraintBottom_toBottomOf="parent"

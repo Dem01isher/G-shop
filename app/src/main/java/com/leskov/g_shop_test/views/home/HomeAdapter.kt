@@ -39,7 +39,9 @@ class HomeAdapter(
 
         val item = getItem(holder.adapterPosition)
 
-        holder.binding.advert = item
+        holder.binding.title.text = item.title
+        holder.binding.description.text = item.description
+        holder.binding.price.text = "${item.price} $"
 
         if (item.description.isNullOrEmpty()){
             holder.binding.description.setText(R.string.template_description)
