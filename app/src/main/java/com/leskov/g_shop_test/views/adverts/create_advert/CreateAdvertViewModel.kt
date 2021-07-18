@@ -56,17 +56,6 @@ class CreateAdvertViewModel(private val repository: AdvertRepository) : BaseView
 
     }
 
-    fun addDeletePhoto(original: String) {
-        Timber.d("delete original url - $original")
-        advert.value?.images?.add(original)
-        advert.value?.images!!.forEach {
-            if (it == original) {
-                advert.value?.images?.remove(it)
-                return
-            }
-        }
-    }
-
     fun clearLiveData() {
         _advert.value = null
         _startUploading.value = null

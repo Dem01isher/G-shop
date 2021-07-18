@@ -8,6 +8,9 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.bumptech.glide.Glide
+import com.leskov.g_shop.core.extensions.gone
+import com.leskov.g_shop.core.extensions.invisible
+import com.leskov.g_shop.core.extensions.visible
 import com.leskov.g_shop_test.R
 import com.leskov.g_shop_test.core.recycler_view_adapter.BindingHolder
 import com.leskov.g_shop_test.databinding.ListItemDeleteImageBinding
@@ -60,11 +63,11 @@ class SelectedImageAdapter(
         val uri : Uri = Uri.parse(urlOfImage)
         listOfImage.add(uri.toString())
         if (urlOfImage.isNullOrEmpty()) {
-            holder.binding.buttonDelete.visibility = View.INVISIBLE
-            holder.binding.progress.visibility = View.VISIBLE
+            holder.binding.buttonDelete.invisible()
+            holder.binding.progress.visible()
         } else {
-            holder.binding.buttonDelete.visibility = View.VISIBLE
-            holder.binding.progress.visibility = View.GONE
+            holder.binding.buttonDelete.visible()
+            holder.binding.progress.gone()
         }
 
         val circularProgressDrawable = CircularProgressDrawable(holder.binding.root.context)

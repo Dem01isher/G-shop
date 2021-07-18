@@ -67,6 +67,7 @@ class UserAdvertsFragment : BaseVMFragment<UserAdvertsViewModel, FragmentUserAdv
                 binding.noAdverts.gone()
                 binding.progressBar.gone()
             } else {
+                adapter.submitList(null)
                 binding.listIsEmpty.visible()
                 binding.noAdverts.visible()
                 binding.swipe.hideRefresh()

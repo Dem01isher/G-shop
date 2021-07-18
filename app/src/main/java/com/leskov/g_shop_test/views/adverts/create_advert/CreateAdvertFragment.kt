@@ -66,7 +66,7 @@ class CreateAdvertFragment : BaseVMFragment<CreateAdvertViewModel, FragmentCreat
         binding.loadImage.setOnClickWithDebounce {
             Timber.d(sizeOfUploading.toString())
             if (sizeOfUploading == -1) {
-                if (adapter.listOfImage.size < EditAdvertFragment.PHOTO_LIMIT) {
+                if (adapter.currentList.size < EditAdvertFragment.PHOTO_LIMIT) {
                     Intent(Intent.ACTION_GET_CONTENT).also {
                         it.type = "image/*"
                         startActivityForResult(it, REQUEST_CODE_IMAGE_PICK)
@@ -173,7 +173,7 @@ class CreateAdvertFragment : BaseVMFragment<CreateAdvertViewModel, FragmentCreat
             if (adapter.currentList.isNotEmpty()) {
                 hideKeyboard(activity)
                 viewModel.createAdvert(
-                    images = adapter.listOfImage,
+                    images = adapter.currentList,
                     AdvertResponse(
                         title = binding.headline.text.toString(),
                         description = binding.description.text.toString(),
@@ -199,7 +199,7 @@ class CreateAdvertFragment : BaseVMFragment<CreateAdvertViewModel, FragmentCreat
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_CODE_IMAGE_PICK) {
             data?.data?.let {
-                val tempList = adapter.listOfImage.toMutableList()
+                val tempList = adapter.currentList.toMutableList()
                 tempList.add(it)
                 adapter.submitList(tempList)
                 adapter.notifyDataSetChanged()
@@ -214,7 +214,7 @@ class CreateAdvertFragment : BaseVMFragment<CreateAdvertViewModel, FragmentCreat
         viewModel.product.nonNullObserve(viewLifecycleOwner) {
             navController.popBackStack()
         }
-        viewModel.progressVisibility.nonNullObserve(this) {
+        viewModel.progressVisibility.nonNullObserve(viewLifecycleOwner) {
             when (it) {
                 ProgressVisibility.SHOW -> {
                     binding.photoLoading.root.visible()
