@@ -30,7 +30,7 @@ class UserAdvertsViewModel(private val repository: AdvertRepository) : BaseViewM
                     _adverts.postValue(it)
                 },
                 onError = {
-                    Timber.d(it)
+                    it.handleResponseErrors()
                 }
             )
     }

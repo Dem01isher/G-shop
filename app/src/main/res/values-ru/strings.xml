@@ -65,4 +65,13 @@
     <string name="delete_user_description">Вы собираетесь удалить свою учетную запись, которая дает доступ к показу вашей рекламы. Вы больше не сможете их использовать, и все данные в вашей учетной записи будут потеряны.</string>
     <string name="edit_advert">Редактирование объявления</string>
     <string name="call">Позвонить</string>
+    <string name="add_one_photo">Please Add one photo</string>
+    <string name="download_photo">Please wait, uploading photos ...</string>
+
+    <string name="delete_photo">Delete Photo</string>
+    <string name="yes">yes</string>
+    <string name="no">no</string>
+    <string name="delete_image">Delete Image ?</string>
+    <string name="wait_for_uploading">Wait for uploading</string>
+    <string name="photo_limit">"Photo limit "</string>
 </resources>

@@ -3,12 +3,13 @@ package com.leskov.g_shop_test.views.adverts.create_advert
 import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.leskov.g_shop_test.core.extensions.applyIO
 import com.leskov.g_shop_test.core.view_model.BaseViewModel
 import com.leskov.g_shop_test.domain.repositories.AdvertRepository
 import com.leskov.g_shop_test.domain.responses.AdvertResponse
-import io.reactivex.android.schedulers.AndroidSchedulers
+import com.leskov.g_shop_test.utils.ProgressVisibility
 import io.reactivex.rxkotlin.subscribeBy
-import io.reactivex.schedulers.Schedulers
+import timber.log.Timber
 
 /**
  *  Created by Android Studio on 6/22/2021 10:56 PM
@@ -17,24 +18,57 @@ import io.reactivex.schedulers.Schedulers
 
 class CreateAdvertViewModel(private val repository: AdvertRepository) : BaseViewModel() {
     private val _product = MutableLiveData<Unit>()
-    val product : LiveData<Unit> = _product
+    val product: LiveData<Unit> = _product
 
-    fun createAdvert(images: List<Uri>, product: AdvertResponse) {
+    private val _advert = MutableLiveData<AdvertResponse>()
+    val advert: LiveData<AdvertResponse> = _advert
+
+    //Property that indicates that needs to change visibility of progress layout
+    private val _progressVisibility = MutableLiveData<ProgressVisibility>()
+    val progressVisibility: LiveData<ProgressVisibility> = _progressVisibility
+
+
+    //Property that indicates that the uploading has started
+    private val _startUploading = MutableLiveData<Unit>()
+    val startUploading: LiveData<Unit> = _startUploading
+
+    fun createAdvert(images: MutableList<Uri>, product: AdvertResponse) {
         disposables + repository.uploadImages(images)
             .flatMapCompletable {
-                product.images = it
+                product.images = it as MutableList<String>
                 repository.createAdvert(product)
             }
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
+            .doOnSubscribe {
+                _progressVisibility.postValue(ProgressVisibility.SHOW)
+            }
+            .applyIO()
+            .doAfterTerminate {
+                _progressVisibility.postValue(ProgressVisibility.HIDE)
+            }
             .subscribeBy(
                 onComplete = {
                     _product.postValue(Unit)
                 },
                 onError = {
-                    timber.log.Timber.d(it)
+                    it.handleResponseErrors()
                 }
             )
 
+    }
+
+    fun addDeletePhoto(original: String) {
+        Timber.d("delete original url - $original")
+        advert.value?.images?.add(original)
+        advert.value?.images!!.forEach {
+            if (it == original) {
+                advert.value?.images?.remove(it)
+                return
+            }
+        }
+    }
+
+    fun clearLiveData() {
+        _advert.value = null
+        _startUploading.value = null
     }
 }

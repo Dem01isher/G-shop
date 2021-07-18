@@ -6,6 +6,7 @@ import com.leskov.g_shop_test.core.extensions.applyIO
 import com.leskov.g_shop_test.core.view_model.BaseViewModel
 import com.leskov.g_shop_test.domain.entitys.UserEntity
 import com.leskov.g_shop_test.domain.repositories.UserRepository
+import com.leskov.g_shop_test.utils.ProgressVisibility
 import io.reactivex.rxkotlin.subscribeBy
 import timber.log.Timber
 
@@ -18,13 +19,10 @@ class RegistrationDataViewModel(private val repository: UserRepository) : BaseVi
     private val _user = MutableLiveData<Unit>()
     val user: LiveData<Unit> = _user
 
-    var loading: MutableLiveData<Boolean> = MutableLiveData()
+    //Property that indicates that needs to change visibility of progress layout
+    private val _progressVisibility = MutableLiveData<ProgressVisibility>()
+    val progressVisibility: LiveData<ProgressVisibility> = _progressVisibility
 
-    init {
-        loading.postValue(false)
-    }
-
-    fun fetchLoading(): LiveData<Boolean> = loading
 
     fun createUser(
         id: String,
@@ -36,8 +34,6 @@ class RegistrationDataViewModel(private val repository: UserRepository) : BaseVi
         email: String,
         image: String
     ) {
-
-        loading.postValue(true)
         disposables + repository.createUser(
             UserEntity(
                 "",
@@ -49,16 +45,21 @@ class RegistrationDataViewModel(private val repository: UserRepository) : BaseVi
                 email = email,
                 photo = image
             )
-        ).applyIO()
+        ).doOnSubscribe {
+            _progressVisibility.postValue(ProgressVisibility.SHOW)
+        }
+            .applyIO()
+            .doAfterTerminate {
+                _progressVisibility.postValue(ProgressVisibility.HIDE)
+            }
             .subscribeBy(
                 onComplete = {
                     _user.postValue(Unit)
                 },
                 onError = {
-                    Timber.d(it.parseResponseError())
+                    it.handleResponseErrors()
                 }
             )
-        loading.postValue(false)
     }
 
 

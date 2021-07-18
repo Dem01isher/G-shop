@@ -45,7 +45,7 @@ class RemoteDataSourceImpl(private val retrofit: Retrofit) : RemoteDataSource {
                             title = document["title"].toString(),
                             description = document["description"].toString(),
                             price = document["price"].toString(),
-                            images = document["images"] as? List<String> ?: listOf(),
+                            images = document["images"] as? MutableList<String> ?: mutableListOf(),
                             user_id = document["user_id"].toString()
                         )
                     )
@@ -70,7 +70,7 @@ class RemoteDataSourceImpl(private val retrofit: Retrofit) : RemoteDataSource {
                             title = document["title"].toString(),
                             description = document["description"].toString(),
                             price = document["price"].toString(),
-                            images = document["images"] as? List<String> ?: listOf(),
+                            images = document["images"] as? MutableList<String> ?: mutableListOf(),
                             user_id = FirebaseAuth.getInstance().currentUser?.uid ?: ""
                         )
                     )
@@ -92,7 +92,7 @@ class RemoteDataSourceImpl(private val retrofit: Retrofit) : RemoteDataSource {
                     title = result["title"].toString(),
                     description = result["description"].toString(),
                     price = result["price"].toString(),
-                    images = result["images"] as? List<String> ?: listOf(),
+                    images = result["images"] as? MutableList<String> ?: mutableListOf(),
                     user_id = result["user_id"].toString()
                 )
                 it.onSuccess(product)
@@ -335,10 +335,10 @@ class RemoteDataSourceImpl(private val retrofit: Retrofit) : RemoteDataSource {
             }
     }
 
-    override fun removeImage(id: String,urlOfImage: String): Completable = Completable.create { emitter ->
+    override fun removeImage(id: String, indexOfImage: List<String>): Completable = Completable.create { emitter ->
         db.collection("adverts")
             .document(id)
-            .update("images", FieldValue.arrayRemove(urlOfImage))
+            .update("images", indexOfImage)
             .addOnCompleteListener {
                 if (!it.isSuccessful){
                     throw it.exception!!

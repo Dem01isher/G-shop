@@ -6,9 +6,8 @@ import com.leskov.g_shop_test.core.extensions.applyIO
 import com.leskov.g_shop_test.core.view_model.BaseViewModel
 import com.leskov.g_shop_test.domain.repositories.AdvertRepository
 import com.leskov.g_shop_test.domain.responses.AdvertResponse
-import io.reactivex.android.schedulers.AndroidSchedulers
+import com.leskov.g_shop_test.utils.ProgressVisibility
 import io.reactivex.rxkotlin.subscribeBy
-import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 
 /**
@@ -27,30 +26,42 @@ class EditAdvertViewModel(private val repository: AdvertRepository) : BaseViewMo
     private val _image = MutableLiveData<Unit>()
     val image : LiveData<Unit> = _image
 
+    //Property that indicates that the uploading has started
+    private val _startUploading = MutableLiveData<Unit>()
+    val startUploading: LiveData<Unit> = _startUploading
+
+    //Property that indicates that needs to change visibility of progress layout
+    private val _progressVisibility = MutableLiveData<ProgressVisibility>()
+    val progressVisibility: LiveData<ProgressVisibility> = _progressVisibility
+
     fun deleteAdvert(id: String){
         disposables + repository.deleteAdvert(id)
+            .doOnSubscribe {
+                _progressVisibility.postValue(ProgressVisibility.SHOW)
+            }
             .applyIO()
+            .doAfterTerminate {
+                _progressVisibility.postValue(ProgressVisibility.HIDE)
+            }
             .subscribeBy(
                 onComplete = {
                     _advert.postValue(Unit)
                 },
                 onError = {
-                    Timber.d(it)
+                    it.handleResponseErrors()
                 }
             )
     }
 
-    fun removeImage(id: String, indexOfImage: String){
-        disposables + repository.removeImage(id, indexOfImage)
-            .applyIO()
-            .subscribeBy(
-                onComplete = {
-                    _image.postValue(Unit)
-                },
-                onError = {
-                    Timber.d(it)
-                }
-            )
+    fun addDeletePhoto(original: String) {
+        Timber.d("delete original url - $original")
+        advertById.value?.images?.add(original)
+        advertById.value?.images!!.forEach {
+            if (it == original) {
+                advertById.value?.images?.remove(it)
+                return
+            }
+        }
     }
 
     fun updateAdvert(
@@ -60,7 +71,13 @@ class EditAdvertViewModel(private val repository: AdvertRepository) : BaseViewMo
         description: String
     ) {
         disposables + repository.updateAdvert(id, headline, price, description)
+            .doOnSubscribe {
+                _progressVisibility.postValue(ProgressVisibility.SHOW)
+            }
             .applyIO()
+            .doAfterTerminate {
+                _progressVisibility.postValue(ProgressVisibility.HIDE)
+            }
             .subscribeBy(
                 onComplete = {
                     _advert.postValue(Unit)
@@ -73,8 +90,13 @@ class EditAdvertViewModel(private val repository: AdvertRepository) : BaseViewMo
 
     fun getAdvertById(id: String) {
         disposables + repository.getAdvertById(id)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
+            .doOnSubscribe {
+                _progressVisibility.postValue(ProgressVisibility.SHOW)
+            }
+            .applyIO()
+            .doAfterTerminate {
+                _progressVisibility.postValue(ProgressVisibility.HIDE)
+            }
             .subscribeBy(
                 onSuccess = {
                     _advertById.postValue(it)
@@ -83,5 +105,23 @@ class EditAdvertViewModel(private val repository: AdvertRepository) : BaseViewMo
                     timber.log.Timber.d(it)
                 }
             )
+    }
+
+    fun removeImage(id: String, indexOfImage: List<String>){
+        disposables + repository.removeImage(id, indexOfImage)
+            .applyIO()
+            .subscribeBy(
+                onComplete = {
+                    _image.postValue(Unit)
+                },
+                onError = {
+                    Timber.d(it)
+                }
+            )
+    }
+
+    fun clearLiveData() {
+        _advertById.value = null
+        _startUploading.value = null
     }
 }

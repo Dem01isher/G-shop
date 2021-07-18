@@ -1,13 +1,16 @@
 package com.leskov.g_shop_test.views.adverts.your_advert.edit_advert
 
+import android.net.Uri
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
+import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.bumptech.glide.Glide
 import com.leskov.g_shop_test.R
-import com.leskov.g_shop_test.core.recycler_view_adapter.BaseListAdapter
 import com.leskov.g_shop_test.core.recycler_view_adapter.BindingHolder
 import com.leskov.g_shop_test.databinding.ListItemDeleteImageBinding
-import com.leskov.g_shop_test.utils.diff_callbacks.imageDiffCallback
 
 /**
  *  Created by Android Studio on 7/9/2021 3:54 PM
@@ -15,62 +18,79 @@ import com.leskov.g_shop_test.utils.diff_callbacks.imageDiffCallback
  */
 
 
-class SelectedImageAdapter(private val click: (String) -> Unit) :
-    BaseListAdapter<String, ListItemDeleteImageBinding>(click, imageDiffCallback) {
+class SelectedImageAdapter(
+    private val onClick: (original: String, position: Int) -> Unit
+) : ListAdapter<String, BindingHolder<ListItemDeleteImageBinding>>(SERVICE_PHOTO_DIFF_CALLBACK) {
 
-    override val layoutId: Int = R.layout.list_item_delete_image
+    companion object {
+        val SERVICE_PHOTO_DIFF_CALLBACK = object : DiffUtil.ItemCallback<String>() {
 
-    var selectedItemPosition: Int = 0
-    var lastPosition: Int = -1
+            override fun areItemsTheSame(oldItem: String, newItem: String): Boolean =
+                oldItem == newItem
 
-    var urlOfImage : String? = null
+            override fun areContentsTheSame(oldItem: String, newItem: String): Boolean =
+                oldItem == newItem
+
+        }
+    }
+
+    var urlOfImage: String? = ""
+    var listOfImage: MutableList<String> = currentList.toMutableList()
+    set(value) {
+        field = value
+        notifyDataSetChanged()
+    }
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
     ): BindingHolder<ListItemDeleteImageBinding> =
         BindingHolder(
-            ListItemDeleteImageBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            ListItemDeleteImageBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent, false
+            )
         )
 
     override fun onBindViewHolder(
         holder: BindingHolder<ListItemDeleteImageBinding>,
         position: Int
     ) {
-        super.onBindViewHolder(holder, position)
+        urlOfImage = getItem(holder.adapterPosition)
+        val uri : Uri = Uri.parse(urlOfImage)
+        listOfImage.add(uri.toString())
+        if (urlOfImage.isNullOrEmpty()) {
+            holder.binding.buttonDelete.visibility = View.INVISIBLE
+            holder.binding.progress.visibility = View.VISIBLE
+        } else {
+            holder.binding.buttonDelete.visibility = View.VISIBLE
+            holder.binding.progress.visibility = View.GONE
+        }
 
-        val item = getItem(holder.adapterPosition)
-
-        urlOfImage = item
+        val circularProgressDrawable = CircularProgressDrawable(holder.binding.root.context)
+        circularProgressDrawable.strokeWidth = 5f
+        circularProgressDrawable.centerRadius = 30f
+        circularProgressDrawable.start()
 
         Glide.with(holder.itemView.context)
-            .load(urlOfImage)
-            .into(holder.binding.image)
-        if (holder.itemView.isSelected) {
-            click(urlOfImage.toString())
-            currentList.removeAt(position)
-            notifyItemRemoved(position)
-            notifyDataSetChanged()
+            .load(listOfImage[position])
+            .centerCrop()
+            .placeholder(circularProgressDrawable)
+            .error(R.drawable.ic_no_photo)
+            .into(holder.binding.imageHolder)
+
+        holder.binding.buttonDelete.setOnClickListener {
+            onClick(
+                getItem(holder.adapterPosition),
+                holder.adapterPosition
+            )
         }
 
     }
 
-    override fun onClick(currentItem: String) {
-        val newPosition = currentList.indexOf(currentItem)
-
-        if (newPosition == selectedItemPosition && lastPosition != -1) return
-
-        lastPosition = selectedItemPosition
-        selectedItemPosition = newPosition
-        notifyItemRemoved(selectedItemPosition)
-        notifyItemChanged(lastPosition)
-        notifyItemChanged(selectedItemPosition)
-
-        super.onClick(currentItem)
+    fun removeItem(position: Int) {
+        val tempList = currentList.toMutableList()
+        tempList.removeAt(position)
+        submitList(tempList)
     }
-
-    fun setOnClickListener(listener: (String) -> Unit) {
-        onClick = listener
-    }
-
 }

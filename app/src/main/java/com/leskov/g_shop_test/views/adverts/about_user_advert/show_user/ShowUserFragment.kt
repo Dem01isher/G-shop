@@ -7,11 +7,14 @@ import android.view.View
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.google.firebase.auth.FirebaseAuth
+import com.leskov.g_shop.core.extensions.gone
 import com.leskov.g_shop.core.extensions.setOnClickWithDebounce
+import com.leskov.g_shop.core.extensions.visible
 import com.leskov.g_shop_test.R
 import com.leskov.g_shop_test.core.extensions.nonNullObserve
 import com.leskov.g_shop_test.core.fragment.BaseVMFragment
 import com.leskov.g_shop_test.databinding.FragmentShowUserBinding
+import com.leskov.g_shop_test.utils.ProgressVisibility
 import kotlin.reflect.KClass
 
 
@@ -21,7 +24,7 @@ class ShowUserFragment : BaseVMFragment<ShowUserViewModel, FragmentShowUserBindi
 
     override val layoutId: Int = R.layout.fragment_show_user
 
-    private val auth : FirebaseAuth by lazy {
+    private val auth: FirebaseAuth by lazy {
         FirebaseAuth.getInstance()
     }
 
@@ -36,7 +39,10 @@ class ShowUserFragment : BaseVMFragment<ShowUserViewModel, FragmentShowUserBindi
 
         binding.call.setOnClickWithDebounce {
             viewModel.user.nonNullObserve(viewLifecycleOwner) {
-                val callIntent = Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", it.phoneNumber, this.toString()))
+                val callIntent = Intent(
+                    Intent.ACTION_DIAL,
+                    Uri.fromParts("tel", it.phoneNumber, this.toString())
+                )
                 callIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
                 startActivity(callIntent)
             }
@@ -48,22 +54,33 @@ class ShowUserFragment : BaseVMFragment<ShowUserViewModel, FragmentShowUserBindi
 
     private fun initObservers() {
 
-        viewModel.user.nonNullObserve(viewLifecycleOwner){
+        viewModel.user.nonNullObserve(viewLifecycleOwner) {
             binding.userName.text = it.name + " " + it.surName
             binding.town.text = it.city
             binding.emailAdress.text = it.email
             binding.phoneNumber.text = it.phoneNumber
             binding.userDescription.text = it.userDescription
 
-            if(it.photo == null){
-            Glide.with(this).load("https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg").transform(
-                CircleCrop()
-            ).into(binding.userImage)
-        }else{
-            Glide.with(this).load(it.photo).transform(CircleCrop()).into(binding.userImage)
+            if (it.photo == null) {
+                Glide.with(this)
+                    .load("https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg")
+                    .transform(
+                        CircleCrop()
+                    ).into(binding.userImage)
+            } else {
+                Glide.with(this).load(it.photo).transform(CircleCrop()).into(binding.userImage)
+            }
         }
+        viewModel.progressVisibility.nonNullObserve(this) {
+            when (it) {
+                ProgressVisibility.SHOW -> {
+                    binding.photoLoading.root.visible()
+                }
+                ProgressVisibility.HIDE -> {
+                    binding.photoLoading.root.gone()
+                }
+            }
         }
-        val user = auth.currentUser
 
     }
 }

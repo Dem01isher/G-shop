@@ -10,6 +10,7 @@ import com.leskov.g_shop_test.R
 import com.leskov.g_shop_test.core.extensions.nonNullObserve
 import com.leskov.g_shop_test.core.fragment.BaseVMFragment
 import com.leskov.g_shop_test.databinding.FragmentRegistationDataBinding
+import com.leskov.g_shop_test.utils.ProgressVisibility
 import kotlin.reflect.KClass
 
 
@@ -140,14 +141,15 @@ class RegistrationDataFragment :
     }
 
     private fun observerLoadingProgress() {
-        viewModel.fetchLoading().nonNullObserve(viewLifecycleOwner) {
-            if (!it) {
-                println(it)
-                binding.progressBar.gone()
-            } else {
-                binding.progressBar.visible()
+        viewModel.progressVisibility.nonNullObserve(this) {
+            when (it) {
+                ProgressVisibility.SHOW -> {
+                    binding.photoLoading.root.visible()
+                }
+                ProgressVisibility.HIDE -> {
+                    binding.photoLoading.root.gone()
+                }
             }
-
         }
     }
 

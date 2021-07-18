@@ -6,6 +6,7 @@ import com.leskov.g_shop_test.core.extensions.applyIO
 import com.leskov.g_shop_test.core.view_model.BaseViewModel
 import com.leskov.g_shop_test.domain.entitys.UserEntity
 import com.leskov.g_shop_test.domain.repositories.UserRepository
+import com.leskov.g_shop_test.utils.ProgressVisibility
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
@@ -24,20 +25,29 @@ class EditProfileViewModel(private val repository: UserRepository) : BaseViewMod
     private val _updateUser = MutableLiveData<Unit>()
     val updateUser: LiveData<Unit> = _updateUser
 
+    //Property that indicates that needs to change visibility of progress layout
+    private val _progressVisibility = MutableLiveData<ProgressVisibility>()
+    val progressVisibility: LiveData<ProgressVisibility> = _progressVisibility
+
     init {
         getUser()
     }
 
     fun getUser() {
         disposables + repository.getUser()
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
+            .doOnSubscribe {
+                _progressVisibility.postValue(ProgressVisibility.SHOW)
+            }
+            .applyIO()
+            .doAfterTerminate {
+                _progressVisibility.postValue(ProgressVisibility.HIDE)
+            }
             .subscribeBy(
                 onSuccess = {
                     _user.postValue(it)
                 },
                 onError = {
-                    timber.log.Timber.d(it)
+                    it.handleResponseErrors()
                 }
             )
     }
@@ -55,27 +65,38 @@ class EditProfileViewModel(private val repository: UserRepository) : BaseViewMod
             city,
             phoneNumber,
             userDescription
-        ).subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
+        ).doOnSubscribe {
+            _progressVisibility.postValue(ProgressVisibility.SHOW)
+        }
+            .applyIO()
+            .doAfterTerminate {
+                _progressVisibility.postValue(ProgressVisibility.HIDE)
+            }
             .subscribeBy(
                 onComplete = {
                     _updateUser.postValue(Unit)
                 },
                 onError = {
-                    timber.log.Timber.d(it)
+                    it.handleResponseErrors()
                 }
             )
     }
 
     fun updateEmail(email: String){
         disposables + repository.updateEmail(email)
+            .doOnSubscribe {
+                _progressVisibility.postValue(ProgressVisibility.SHOW)
+            }
             .applyIO()
+            .doAfterTerminate {
+                _progressVisibility.postValue(ProgressVisibility.HIDE)
+            }
             .subscribeBy(
                 onComplete = {
                     _updateUser.postValue(Unit)
                 },
                 onError = {
-                    Timber.d(it)
+                    it.handleResponseErrors()
                 }
             )
     }

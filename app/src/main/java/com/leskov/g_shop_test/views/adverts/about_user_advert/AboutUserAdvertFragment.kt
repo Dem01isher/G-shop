@@ -12,6 +12,7 @@ import com.leskov.g_shop_test.R
 import com.leskov.g_shop_test.core.extensions.nonNullObserve
 import com.leskov.g_shop_test.core.fragment.BaseVMFragment
 import com.leskov.g_shop_test.databinding.FragmentAboutUserAdvertBinding
+import com.leskov.g_shop_test.utils.ProgressVisibility
 import kotlin.reflect.KClass
 
 
@@ -58,6 +59,16 @@ class AboutUserAdvertFragment :
             } else {
                 binding.noImage.gone()
                 binding.poster.adapter = SliderViewAdapter(advert.images, this)
+            }
+        }
+        viewModel.progressVisibility.nonNullObserve(this) {
+            when (it) {
+                ProgressVisibility.SHOW -> {
+                    binding.photoLoading.root.visible()
+                }
+                ProgressVisibility.HIDE -> {
+                    binding.photoLoading.root.gone()
+                }
             }
         }
     }

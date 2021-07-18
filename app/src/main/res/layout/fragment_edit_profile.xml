@@ -28,6 +28,12 @@
                 app:titleTextColor="@color/white" />
         </com.google.android.material.appbar.AppBarLayout>
 
+        <include
+            android:id="@+id/photo_loading"
+            layout="@layout/progress"
+            android:visibility="gone"
+            tools:visibility="gone" />
+
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="0dp"

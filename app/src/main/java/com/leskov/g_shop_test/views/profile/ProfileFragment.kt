@@ -7,6 +7,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.bumptech.glide.request.target.Target.SIZE_ORIGINAL
@@ -14,11 +15,14 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
+import com.leskov.g_shop.core.extensions.gone
 import com.leskov.g_shop.core.extensions.setOnClickWithDebounce
+import com.leskov.g_shop.core.extensions.visible
 import com.leskov.g_shop_test.R
 import com.leskov.g_shop_test.core.extensions.nonNullObserve
 import com.leskov.g_shop_test.core.fragment.BaseVMFragment
 import com.leskov.g_shop_test.databinding.FragmentProfileBinding
+import com.leskov.g_shop_test.utils.ProgressVisibility
 import java.io.File
 import java.util.*
 import kotlin.reflect.KClass
@@ -33,6 +37,8 @@ class ProfileFragment : BaseVMFragment<ProfileViewModel, FragmentProfileBinding>
     private lateinit var auth: FirebaseAuth
 
     var SELECT_PICTURE = 200
+
+    private lateinit var circularProgressDrawable : CircularProgressDrawable
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -75,7 +81,17 @@ class ProfileFragment : BaseVMFragment<ProfileViewModel, FragmentProfileBinding>
             binding.phoneNumber.text = it.phoneNumber
             binding.userDescription.text = it.userDescription
 
-            Glide.with(this).load(it.photo).transform(CircleCrop()).into(binding.userImage)
+            circularProgressDrawable = CircularProgressDrawable(requireContext())
+            circularProgressDrawable.strokeWidth = 5f
+            circularProgressDrawable.centerRadius = 30f
+            circularProgressDrawable.start()
+
+            Glide.with(requireContext())
+                .load(it.photo)
+                .transform(CircleCrop())
+                .placeholder(circularProgressDrawable)
+                .error(R.drawable.ic_no_photo)
+                .into(binding.userImage)
 
 //            val user = auth.currentUser
 //
@@ -89,7 +105,17 @@ class ProfileFragment : BaseVMFragment<ProfileViewModel, FragmentProfileBinding>
 //                Glide.with(this).load(it.photo).transform(CircleCrop()).into(binding.userImage)
 //            }
         }
-        viewModel.image.nonNullObserve(viewLifecycleOwner){ image ->
+        viewModel.progressVisibility.nonNullObserve(this) {
+            when (it) {
+                ProgressVisibility.SHOW -> {
+                    binding.photoLoading.root.visible()
+                }
+                ProgressVisibility.HIDE -> {
+                    binding.photoLoading.root.gone()
+                }
+            }
+        }
+        viewModel.image.nonNullObserve(viewLifecycleOwner){
             viewModel.getUser()
         }
     }
@@ -114,12 +140,16 @@ class ProfileFragment : BaseVMFragment<ProfileViewModel, FragmentProfileBinding>
                 // Get the url of the image from data
                 val selectedImageUri = data?.data
                 if (null != selectedImageUri) {
+                    circularProgressDrawable = CircularProgressDrawable(requireContext())
+                    circularProgressDrawable.strokeWidth = 5f
+                    circularProgressDrawable.centerRadius = 30f
+                    circularProgressDrawable.start()
 
                     Glide.with(requireContext())
                         .load(selectedImageUri)
-                        .transform(
-                            CircleCrop()
-                        )
+                        .transform(CircleCrop())
+                        .placeholder(circularProgressDrawable)
+                        .error(R.drawable.ic_no_photo)
                         .into(binding.userImage)
 
                     viewModel.uploadUserImage(selectedImageUri)

@@ -33,7 +33,7 @@ class AdvertRepositoryImpl(private val remoteDataSource: RemoteDataSource) : Adv
     override fun uploadImages(images: List<Uri>): Single<List<String>> =
         remoteDataSource.uploadImages(images)
 
-    override fun removeImage(id: String, urlOfImage: String): Completable = remoteDataSource.removeImage(id, urlOfImage)
+    override fun removeImage(id: String, indexOfImage: List<String>): Completable = remoteDataSource.removeImage(id, indexOfImage)
 
     override fun loadImages(id: String): Single<List<ImageResponse>> = remoteDataSource.loadImage(id)
 

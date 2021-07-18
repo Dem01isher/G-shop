@@ -25,7 +25,7 @@ interface AdvertRepository {
 
     fun loadImages(id: String) : Single<List<ImageResponse>>
 
-    fun removeImage(id: String, urlOfImage: String) : Completable
+    fun removeImage(id: String, indexOfImage: List<String>) : Completable
 
     fun createAdvert(advert: AdvertResponse): Completable
 

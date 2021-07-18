@@ -4,7 +4,6 @@ import android.app.Application
 import com.leskov.g_shop_test.di.firebaseDataSourceModule
 import com.leskov.g_shop_test.di.repositoriesModule
 import com.leskov.g_shop_test.di.viewModelsModule
-import org.kodein.di.KodeinAware
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin

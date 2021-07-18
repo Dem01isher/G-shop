@@ -1,10 +1,17 @@
 package com.leskov.g_shop_test.views.adverts.create_advert
 
+import android.net.Uri
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.bumptech.glide.Glide
+import com.leskov.g_shop_test.R
 import com.leskov.g_shop_test.core.recycler_view_adapter.BindingHolder
+import com.leskov.g_shop_test.databinding.ListItemDeleteImageBinding
 import com.leskov.g_shop_test.databinding.SecondImageBinding
 import com.leskov.g_shop_test.databinding.SetImageBinding
 import com.leskov.g_shop_test.domain.entitys.ImageEntity
@@ -14,62 +21,70 @@ import com.leskov.g_shop_test.domain.entitys.ImageEntity
  *  Developer: Sergey Leskov
  */
 
-class ImageAdapter(private val onClick: (ImageEntity) -> Unit) :
-    RecyclerView.Adapter<BindingHolder<*>>() {
+class ImageAdapter(
+    private val onClick: (original: String, position: Int) -> Unit
+) : ListAdapter<Uri, BindingHolder<ListItemDeleteImageBinding>>(SERVICE_PHOTO_DIFF_CALLBACK) {
 
-    private var onAddImageListener: (() -> Unit)? = null
+    companion object {
+        val SERVICE_PHOTO_DIFF_CALLBACK = object : DiffUtil.ItemCallback<Uri>() {
 
-    fun setOnAddImageListener(listener: () -> Unit) {
-        onAddImageListener = listener
+            override fun areItemsTheSame(oldItem: Uri, newItem: Uri): Boolean =
+                oldItem == newItem
+
+            override fun areContentsTheSame(oldItem: Uri, newItem: Uri): Boolean =
+                oldItem == newItem
+
+        }
     }
+    var listOfImage: MutableList<Uri> = currentList.toMutableList()
 
-    var list: List<ImageEntity> = emptyList()
-        set(value) {
-            field = value
-            notifyDataSetChanged()
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int
+    ): BindingHolder<ListItemDeleteImageBinding> =
+        BindingHolder(
+            ListItemDeleteImageBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent, false
+            )
+        )
+
+    override fun onBindViewHolder(
+        holder: BindingHolder<ListItemDeleteImageBinding>,
+        position: Int
+    ) {
+        if (getItem(holder.adapterPosition) == null) {
+            holder.binding.buttonDelete.visibility = View.INVISIBLE
+            holder.binding.progress.visibility = View.VISIBLE
+        } else {
+            holder.binding.buttonDelete.visibility = View.VISIBLE
+            holder.binding.progress.visibility = View.GONE
         }
 
+        val circularProgressDrawable = CircularProgressDrawable(holder.binding.root.context)
+        circularProgressDrawable.strokeWidth = 5f
+        circularProgressDrawable.centerRadius = 30f
+        circularProgressDrawable.start()
+        listOfImage.add(getItem(holder.adapterPosition))
+        Glide.with(holder.itemView.context)
+            .load(listOfImage[position])
+            .centerCrop()
+            .placeholder(circularProgressDrawable)
+            .error(R.drawable.ic_no_photo)
+            .into(holder.binding.imageHolder)
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BindingHolder<*> =
-        when (viewType) {
-            ViewType.BUTTON -> {
-                BindingHolder(
-                    SetImageBinding.inflate(
-                        LayoutInflater.from(parent.context),
-                        parent, false
-                    )
-                )
-            }
-            else -> BindingHolder(
-                SecondImageBinding.inflate(
-                    LayoutInflater.from(parent.context),
-                    parent, false
-                )
+        holder.binding.buttonDelete.setOnClickListener {
+            onClick(
+                getItem(holder.adapterPosition).toString(),
+                holder.adapterPosition
             )
         }
 
-    override fun onBindViewHolder(holder: BindingHolder<*>, position: Int) {
-        if (getItemViewType(holder.adapterPosition) == ViewType.BUTTON) {
-            holder.binding.root.setOnClickListener {
-                onAddImageListener?.invoke()
-            }
-
-
-        } else {
-            holder.binding as SecondImageBinding
-            holder.binding.root.setOnClickListener(null)
-            Glide.with(holder.binding.root.context)
-                .load((list[holder.adapterPosition] as ImageEntity.Image).imageUri)
-                .into(holder.binding.image)
-        }
     }
 
-    override fun getItemViewType(position: Int): Int {
-        return when (list[position]) {
-            is ImageEntity.SelectImage -> ViewType.BUTTON
-            is ImageEntity.Image -> ViewType.SELECTED_IMAGE
-        }
+    fun removeItem(position: Int) {
+        val tempList = currentList.toMutableList()
+        tempList.removeAt(position)
+        submitList(tempList)
     }
-
-    override fun getItemCount(): Int = list.size
 }

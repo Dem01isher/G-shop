@@ -13,6 +13,7 @@ import com.leskov.g_shop_test.R
 import com.leskov.g_shop_test.core.extensions.nonNullObserve
 import com.leskov.g_shop_test.core.fragment.BaseVMFragment
 import com.leskov.g_shop_test.databinding.FragmentHomeBinding
+import com.leskov.g_shop_test.utils.ProgressVisibility
 import kotlin.reflect.KClass
 
 
@@ -66,7 +67,6 @@ class HomeFragment : BaseVMFragment<HomeViewModel, FragmentHomeBinding>() {
             binding.swipe.showRefresh()
             binding.noAdverts.gone()
             binding.listIsEmpty.gone()
-            binding.progressBar.gone()
             viewModel.getAdverts()
         }
 
@@ -82,12 +82,21 @@ class HomeFragment : BaseVMFragment<HomeViewModel, FragmentHomeBinding>() {
                 binding.swipe.hideRefresh()
                 binding.listIsEmpty.gone()
                 binding.noAdverts.gone()
-                binding.progressBar.gone()
             } else {
+                adapter.submitList(null)
                 binding.listIsEmpty.visible()
                 binding.noAdverts.visible()
                 binding.swipe.hideRefresh()
-                binding.progressBar.gone()
+            }
+        }
+        viewModel.progressVisibility.nonNullObserve(this) {
+            when (it) {
+                ProgressVisibility.SHOW -> {
+                    binding.photoLoading.root.visible()
+                }
+                ProgressVisibility.HIDE -> {
+                    binding.photoLoading.root.gone()
+                }
             }
         }
     }

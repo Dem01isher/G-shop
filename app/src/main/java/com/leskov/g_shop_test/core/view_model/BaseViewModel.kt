@@ -2,25 +2,37 @@ package com.leskov.g_shop_test.core.view_model
 
 import androidx.annotation.IdRes
 import androidx.annotation.StringRes
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.tasks.Task
 import com.google.firebase.FirebaseException
 import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.FirebaseTooManyRequestsException
 import com.google.firebase.auth.*
+import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.google.gson.Gson
 import com.leskov.g_shop_test.R
+import com.leskov.g_shop_test.core.event.Event
 import com.leskov.g_shop_test.core.event.EventLiveData
 import com.leskov.g_shop_test.core.event.EventMutableLiveData
+import com.leskov.g_shop_test.core.event.SingleLiveEvent
 import com.leskov.g_shop_test.domain.entitys.ResultOf
+import com.leskov.g_shop_test.utils.ProgressVisibility
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.exceptions.UndeliverableException
 import timber.log.Timber
 import java.net.ConnectException
+import java.net.SocketTimeoutException
+import java.net.UnknownHostException
 import java.util.concurrent.TimeoutException
 
 open class BaseViewModel : ViewModel() {
     protected val disposables: CompositeDisposable = CompositeDisposable()
+    val messageTextData = MutableLiveData<String?>()
+    val openLogin = MutableLiveData<Void>()
+    val messageResData = SingleLiveEvent<Int?>()
+    val progress = MutableLiveData<Event<ProgressVisibility>>()
 
     private val _showMessage = EventMutableLiveData<String>()
     val showMessage: EventLiveData<String> = _showMessage
@@ -41,76 +53,104 @@ open class BaseViewModel : ViewModel() {
         initProgress = true
     }
 
-    fun showMessage(@StringRes message: Int) = _showMessageRes.postEvent(message)
+    init {
+        FirebaseCrashlytics.getInstance().log("create ${this::class.java.name}")
+    }
 
-    fun showMessage(message: String) = _showMessage.postEvent(message)
+    fun showMessage(message: String?) {
+        messageTextData.value = message
+    }
+
+    fun showMessage(@StringRes messageId: Int) {
+        messageResData.value = messageId
+    }
 
     fun navigate(@IdRes route: Int) = _navigate.postEvent(route)
 
-    fun Throwable.parseResponseError() : String {
-        return when {
-            this is FirebaseAuthInvalidCredentialsException -> {
-                ResultOf.Success("Incorrect password or user does not have a password").toString()
-            }
-            this is FirebaseAuthInvalidUserException -> {
-                ResultOf.Success("User does not exist or has been deleted").toString()
+    fun Throwable.handleResponseErrors() {
+        FirebaseCrashlytics.getInstance().log("responseError - ${this.message}")
 
-            }
-            this is FirebaseTooManyRequestsException -> ({
-                showMessage("Server problems. Please try again later")
-            }).toString()
+        val message: String?
+        when {
 
-            this is UndeliverableException -> {
+            this is com.google.firebase.auth.FirebaseAuthInvalidCredentialsException -> {
+                showMessage(R.string.firebase_auth_invalid_credentials_exception)
+                return
+            }
+            this is com.google.firebase.auth.FirebaseAuthInvalidUserException -> {
+                showMessage(R.string.firebase_auth_invalid_user_exception)
+                return
+            }
+            this is com.google.firebase.FirebaseTooManyRequestsException -> {
+                showMessage(R.string.http429_msg)
+                return
+            }
+            this is io.reactivex.exceptions.UndeliverableException -> {
                 if (this.message?.trim()?.contains(
                         "FirebaseTooManyRequestsException",
                         true
                     ) == true
                 ) {
-                    ResultOf.Success("Server problems. Please try again later").toString()
+                    showMessage(R.string.http429_msg)
                 } else {
-                    ResultOf.Success(this.message.toString()).toString()
+                    Timber.e(this)
+                    showMessage(this.message)
                 }
-
+                return
             }
             this is FirebaseAuthUserCollisionException -> {
-                showMessage("A user with this email already exists").toString()
+                showMessage(R.string.user_exists_error_msg)
+                return
             }
+            this is RuntimeException -> {
+                when (this.message) {
+                    "com.google.firebase.FirebaseException: An internal error has occurred. [ 7: ]" -> {
+                        showMessage(R.string.no_internet_connection)
+                        openLogin.postValue(null)
+                    }
+                    "com.google.firebase.FirebaseNetworkException: A network error (such as timeout, interrupted connection or unreachable host) has occurred." -> {
+                        showMessage(R.string.no_internet_connection)
+                    }
 
-            this is FirebaseAuthWeakPasswordException -> {
-                ResultOf.Success("Password should be at least 6 characters").toString()
+                    else -> {
+                        Timber.e(this)
+                        showMessage(this.message)
+                        openLogin.postValue(null)
+                    }
+                }
+                return
             }
-
-            this is FirebaseAuthInvalidUserException -> {
-                ResultOf.Success("User does not exist or has been deleted").toString()
+            this is SocketTimeoutException -> {
+                showMessage(R.string.slow_internet)
+                openLogin.postValue(null)
+                return
             }
-            this.message?.contains("[ Password should be at least 6 characters ]") == true -> {
-                ResultOf.Success("User does not exist or has been deleted").toString()
-            }
-
-            this is TimeoutException -> {
-                ResultOf.Success(R.string.no_internet_or_slow.toString()).toString()
+            this is UnknownHostException -> {
+                showMessage(R.string.no_internet_connection)
+                return
             }
             this.message?.contains("FirebaseAuthInvalidUserException") == true -> {
-                ResultOf.Success("User does not exist or has been deleted").toString()
-
+                showMessage(R.string.firebase_auth_invalid_user_exception)
+                return
             }
+
             this is FirebaseException -> {
                 if (this.message == "An internal error has occurred. [ 7: ]") {
-                    ResultOf.Success("No connection").toString()
+                    showMessage(R.string.no_internet_connection)
+                    openLogin.postValue(null)
                 } else {
-                    ResultOf.Success(this.message.toString()).toString()
+                    showMessage(this.message)
                 }
-            }
-            this is ConnectException -> {
-                ResultOf.Success("No connection").toString()
+                return
             }
             this is FirebaseNetworkException -> {
-                ResultOf.Success("No connection").toString()
+                showMessage(R.string.no_internet_connection)
+                return
             }
-            else -> ResultOf.Success(
-                this.message?.capitalize()
-            ).toString()
+            else -> message = this.message?.capitalize()
         }
+        Timber.e(this)
+        showMessage(message)
     }
 
     protected infix operator fun CompositeDisposable.plus(d: Disposable) = this.add(d)

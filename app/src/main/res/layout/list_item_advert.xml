@@ -10,11 +10,12 @@
         android:layout_marginStart="12dp"
         android:background="?selectableItemBackground"
         android:layout_width="370dp"
-        android:layout_height="wrap_content">
+        android:layout_height="144dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="370dp"
-            android:layout_height="wrap_content">
+            android:layout_height="144dp"
+            android:background="?selectableItemBackground">
 
             <ImageView
                 android:id="@+id/poster"

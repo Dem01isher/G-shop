@@ -31,7 +31,7 @@ interface RemoteDataSource {
 
     fun loadImage(id: String) : Single<List<ImageResponse>>
 
-    fun removeImage(id: String, urlOfImage: String) : Completable
+    fun removeImage(id: String, indexOfImage: List<String>) : Completable
 
     fun createUser(user: UserEntity): Completable
 
