@@ -140,6 +140,7 @@ dependencies {
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.5'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.5'
 
+    implementation 'com.github.Drjacky:ImagePicker:2.1.12'
 //    // Koin AndroidX Scope features
 //    implementation "org.koin:koin-androidx-scope:2.0.0"
 //    // Koin AndroidX ViewModel features

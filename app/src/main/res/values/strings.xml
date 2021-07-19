@@ -72,4 +72,6 @@
     <string name="photo_limit">"Photo limit "</string>
     <string name="add_one_photo">Please Add one photo</string>
     <string name="download_photo">Please wait, uploading photos ...</string>
+    <string name="choose_picture">Choose the picture</string>
+    <string name="user_description">About Yourself:</string>
 </resources>

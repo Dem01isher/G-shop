@@ -2,11 +2,14 @@ package com.leskov.g_shop_test.views.adverts.your_advert.edit_advert
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.leskov.g_shop_test.core.event.EventLiveData
+import com.leskov.g_shop_test.core.event.EventMutableLiveData
 import com.leskov.g_shop_test.core.extensions.applyIO
 import com.leskov.g_shop_test.core.view_model.BaseViewModel
 import com.leskov.g_shop_test.domain.repositories.AdvertRepository
 import com.leskov.g_shop_test.domain.responses.AdvertResponse
 import com.leskov.g_shop_test.utils.ProgressVisibility
+import com.leskov.g_shop_test.utils.field_state.AdvertFieldState
 import io.reactivex.rxkotlin.subscribeBy
 import timber.log.Timber
 
@@ -34,6 +37,12 @@ class EditAdvertViewModel(private val repository: AdvertRepository) : BaseViewMo
     private val _progressVisibility = MutableLiveData<ProgressVisibility>()
     val progressVisibility: LiveData<ProgressVisibility> = _progressVisibility
 
+    private val _fieldState = EventMutableLiveData<AdvertFieldState>()
+    val fieldState: EventLiveData<AdvertFieldState> = _fieldState
+
+    private val _result = EventMutableLiveData<String>()
+    val result : EventLiveData<String> = _result
+
     fun deleteAdvert(id: String){
         disposables + repository.deleteAdvert(id)
             .doOnSubscribe {
@@ -53,39 +62,31 @@ class EditAdvertViewModel(private val repository: AdvertRepository) : BaseViewMo
             )
     }
 
-    fun addDeletePhoto(original: String) {
-        Timber.d("delete original url - $original")
-        advertById.value?.images?.add(original)
-        advertById.value?.images!!.forEach {
-            if (it == original) {
-                advertById.value?.images?.remove(it)
-                return
-            }
-        }
-    }
-
     fun updateAdvert(
         id: String,
         headline: String,
         price: String,
-        description: String
+        description: String,
+        sizeOfList: Int
     ) {
-        disposables + repository.updateAdvert(id, headline, price, description)
-            .doOnSubscribe {
-                _progressVisibility.postValue(ProgressVisibility.SHOW)
-            }
-            .applyIO()
-            .doAfterTerminate {
-                _progressVisibility.postValue(ProgressVisibility.HIDE)
-            }
-            .subscribeBy(
-                onComplete = {
-                    _advert.postValue(Unit)
-                },
-                onError = {
-                    Timber.d(it)
+        if (isDataValid(headline, price, description, sizeOfList)) {
+            disposables + repository.updateAdvert(id, headline, price, description)
+                .doOnSubscribe {
+                    _progressVisibility.postValue(ProgressVisibility.SHOW)
                 }
-            )
+                .applyIO()
+                .doAfterTerminate {
+                    _progressVisibility.postValue(ProgressVisibility.HIDE)
+                }
+                .subscribeBy(
+                    onComplete = {
+                        _advert.postValue(Unit)
+                    },
+                    onError = {
+                        Timber.d(it)
+                    }
+                )
+        }
     }
 
     fun getAdvertById(id: String) {
@@ -118,6 +119,30 @@ class EditAdvertViewModel(private val repository: AdvertRepository) : BaseViewMo
                     Timber.d(it)
                 }
             )
+    }
+
+    private fun isDataValid(headline: String, price: String, description: String, sizeOfList: Int): Boolean {
+        val fieldState = AdvertFieldState()
+
+        if (headline.isNullOrEmpty()) {
+            fieldState.headline = "This field is empty"
+        }
+        if (price.isEmpty()) {
+            fieldState.price = "This field is empty"
+        }
+        if (description.isNullOrEmpty()){
+            fieldState.description = "This field is empty"
+        }
+        if (sizeOfList == 0){
+            _result.postEvent("Please add one image")
+        }
+
+        return if (fieldState.haveError()) {
+            _fieldState.postEvent(fieldState)
+            false
+        } else {
+            true
+        }
     }
 
     fun clearLiveData() {

@@ -3,13 +3,15 @@ package com.leskov.g_shop_test.views.adverts.create_advert
 import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.leskov.g_shop_test.core.event.EventLiveData
+import com.leskov.g_shop_test.core.event.EventMutableLiveData
 import com.leskov.g_shop_test.core.extensions.applyIO
 import com.leskov.g_shop_test.core.view_model.BaseViewModel
 import com.leskov.g_shop_test.domain.repositories.AdvertRepository
 import com.leskov.g_shop_test.domain.responses.AdvertResponse
 import com.leskov.g_shop_test.utils.ProgressVisibility
+import com.leskov.g_shop_test.utils.field_state.AdvertFieldState
 import io.reactivex.rxkotlin.subscribeBy
-import timber.log.Timber
 
 /**
  *  Created by Android Studio on 6/22/2021 10:56 PM
@@ -28,36 +30,79 @@ class CreateAdvertViewModel(private val repository: AdvertRepository) : BaseView
     val progressVisibility: LiveData<ProgressVisibility> = _progressVisibility
 
 
-    //Property that indicates that the uploading has started
-    private val _startUploading = MutableLiveData<Unit>()
-    val startUploading: LiveData<Unit> = _startUploading
+    private val _fieldState = EventMutableLiveData<AdvertFieldState>()
+    val fieldState: EventLiveData<AdvertFieldState> = _fieldState
 
-    fun createAdvert(images: MutableList<Uri>, product: AdvertResponse) {
-        disposables + repository.uploadImages(images)
-            .flatMapCompletable {
-                product.images = it as MutableList<String>
-                repository.createAdvert(product)
-            }
-            .doOnSubscribe {
-                _progressVisibility.postValue(ProgressVisibility.SHOW)
-            }
-            .applyIO()
-            .doAfterTerminate {
-                _progressVisibility.postValue(ProgressVisibility.HIDE)
-            }
-            .subscribeBy(
-                onComplete = {
-                    _product.postValue(Unit)
-                },
-                onError = {
-                    it.handleResponseErrors()
+    private val _result = EventMutableLiveData<String>()
+    val result : EventLiveData<String> = _result
+
+    fun createAdvert(
+        images: MutableList<Uri>,
+        id: String,
+        user_id: String,
+        headline: String,
+        price: String,
+        description: String,
+        sizeOfList: Int
+    ) {
+        if (isDataValid(headline, price, description, sizeOfList)) {
+            disposables + repository.uploadImages(images)
+                .flatMapCompletable {
+                    repository.createAdvert(
+                        AdvertResponse(
+                            it as MutableList<String>,
+                            id,
+                            user_id,
+                            headline,
+                            description,
+                            price
+                        )
+                    )
                 }
-            )
-
+                .doOnSubscribe {
+                    _progressVisibility.postValue(ProgressVisibility.SHOW)
+                }
+                .applyIO()
+                .doAfterTerminate {
+                    _progressVisibility.postValue(ProgressVisibility.HIDE)
+                }
+                .subscribeBy(
+                    onComplete = {
+                        _product.postValue(Unit)
+                    },
+                    onError = {
+                        it.handleResponseErrors()
+                    }
+                )
+        }
     }
+
+    private fun isDataValid(headline: String, price: String, description: String, sizeOfList: Int): Boolean {
+        val fieldState = AdvertFieldState()
+
+        if (headline.isNullOrEmpty()) {
+            fieldState.headline = "Invalid email"
+        }
+        if (price.isEmpty()) {
+            fieldState.price = "Invalid password"
+        }
+        if (description.isNullOrEmpty()) {
+            fieldState.description = "Invalid description"
+        }
+        if (sizeOfList == 0){
+            _result.postEvent("Please add one image")
+        }
+
+        return if (fieldState.haveError()) {
+            _fieldState.postEvent(fieldState)
+            false
+        } else {
+            true
+        }
+    }
+
 
     fun clearLiveData() {
         _advert.value = null
-        _startUploading.value = null
     }
 }

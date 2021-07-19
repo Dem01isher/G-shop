@@ -4,19 +4,19 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
-import android.text.TextUtils
 import android.text.TextWatcher
 import android.view.KeyEvent
 import android.view.View
+import com.github.drjacky.imagepicker.ImagePicker
 import com.google.firebase.auth.FirebaseAuth
 import com.leskov.g_shop.core.extensions.gone
 import com.leskov.g_shop.core.extensions.setOnClickWithDebounce
 import com.leskov.g_shop.core.extensions.visible
 import com.leskov.g_shop_test.R
+import com.leskov.g_shop_test.core.extensions.eventObserve
 import com.leskov.g_shop_test.core.extensions.nonNullObserve
 import com.leskov.g_shop_test.core.fragment.BaseVMFragment
 import com.leskov.g_shop_test.databinding.FragmentCreateAdvertBinding
-import com.leskov.g_shop_test.domain.responses.AdvertResponse
 import com.leskov.g_shop_test.utils.ProgressVisibility
 import com.leskov.g_shop_test.views.adverts.your_advert.edit_advert.EditAdvertFragment
 import com.leskov.g_shop_test.views.adverts.your_advert.edit_advert.EditAdvertFragment.Companion.REQUEST_CODE_IMAGE_PICK
@@ -31,8 +31,6 @@ class CreateAdvertFragment : BaseVMFragment<CreateAdvertViewModel, FragmentCreat
 
     override val layoutId: Int = R.layout.fragment_create_advert
 
-    private var photoUploaded: Boolean = true
-    private var sizeBeforeUploading = 0
     private var sizeOfUploading = -1
 
     private val adapter = ImageAdapter { original, position ->
@@ -67,10 +65,19 @@ class CreateAdvertFragment : BaseVMFragment<CreateAdvertViewModel, FragmentCreat
             Timber.d(sizeOfUploading.toString())
             if (sizeOfUploading == -1) {
                 if (adapter.currentList.size < EditAdvertFragment.PHOTO_LIMIT) {
-                    Intent(Intent.ACTION_GET_CONTENT).also {
-                        it.type = "image/*"
-                        startActivityForResult(it, REQUEST_CODE_IMAGE_PICK)
-                    }
+                    ImagePicker.with(requireActivity())
+                        .crop()
+                        .galleryMimeTypes(  //Exclude gif images
+                            mimeTypes = arrayOf(
+                                "image/png",
+                                "image/jpg",
+                                "image/jpeg"
+                            )
+                        )
+                        .createIntentFromDialog {
+                            it.type = "image/*"
+                            startActivityForResult(it, REQUEST_CODE_IMAGE_PICK)
+                        }
                 } else {
                     showMessage(R.string.photo_limit)
                 }
@@ -133,63 +140,19 @@ class CreateAdvertFragment : BaseVMFragment<CreateAdvertViewModel, FragmentCreat
     }
 
     private fun createAdvert() {
-        if (TextUtils.isEmpty(binding.price.text.toString())
-            && TextUtils.isEmpty(binding.description.text.toString())
-            && TextUtils.isEmpty(binding.headline.text.toString())
-        ) {
-            binding.headlineLayout.error = getString(R.string.set_headline)
-            binding.descriptionLayout.error = getString(R.string.set_description)
-            binding.priceLayout.error = getString(R.string.set_price)
-            return
-        } else if (binding.price.text.isNullOrEmpty()) {
-            binding.priceLayout.error = getString(R.string.set_price)
-            binding.description.error = null
-            binding.headline.error = null
-        } else if (binding.description.text.isNullOrEmpty()) {
-            binding.priceLayout.error = null
-            binding.description.error = getString(R.string.set_description)
-            binding.headline.error = null
-        } else if (binding.headline.text.isNullOrEmpty()) {
-            binding.priceLayout.error = null
-            binding.description.error = null
-            binding.headline.error = getString(R.string.set_headline)
-        } else if (binding.headline.text.isNullOrEmpty()
-            && binding.description.text.isNullOrEmpty()
-        ) {
-            binding.priceLayout.error = null
-            binding.description.error = getString(R.string.set_description)
-            binding.headline.error = getString(R.string.set_headline)
-        } else if (binding.headline.text.isNullOrEmpty()
-            && binding.price.text.isNullOrEmpty()
-        ) {
-            binding.priceLayout.error = getString(R.string.set_price)
-            binding.description.error = null
-            binding.headline.error = getString(R.string.set_headline)
-        } else if (binding.description.text.isNullOrEmpty() && binding.headline.text.isNullOrEmpty()) {
-            binding.priceLayout.error = null
-            binding.description.error = getString(R.string.set_description)
-            binding.headline.error = getString(R.string.set_headline)
-        } else {
-            if (adapter.currentList.isNotEmpty()) {
-                hideKeyboard(activity)
-                viewModel.createAdvert(
-                    images = adapter.currentList,
-                    AdvertResponse(
-                        title = binding.headline.text.toString(),
-                        description = binding.description.text.toString(),
-                        price = binding.price.text.toString(),
-                        id = id.toString(),
-                        user_id = FirebaseAuth.getInstance().currentUser?.uid ?: ""
-                    )
-                )
-                viewModel.clearLiveData()
-            } else {
-                showMessage(R.string.add_one_photo)
-            }
-
-
-        }
+        hideKeyboard(activity)
+        viewModel.createAdvert(
+            images = adapter.currentList,
+            headline = binding.headline.text.toString(),
+            description = binding.description.text.toString(),
+            price = binding.price.text.toString(),
+            id = id.toString(),
+            user_id = FirebaseAuth.getInstance().currentUser?.uid ?: "",
+            sizeOfList = adapter.currentList.size
+        )
+        viewModel.clearLiveData()
     }
+
 
     private fun removePhoto(position: Int) {
         adapter.removeItem(position)
@@ -223,6 +186,24 @@ class CreateAdvertFragment : BaseVMFragment<CreateAdvertViewModel, FragmentCreat
                     binding.photoLoading.root.gone()
                 }
             }
+        }
+        viewModel.fieldState.eventObserve(viewLifecycleOwner) { fieldState ->
+            fieldState.headline?.let {
+                binding.headline.error = it
+            } ?: run { binding.headlineLayout.error = null }
+
+            fieldState.price?.let {
+
+                binding.priceLayout.error = it
+            } ?: run { binding.priceLayout.error = null }
+
+            fieldState.description?.let {
+
+                binding.descriptionLayout.error = it
+            } ?: run { binding.descriptionLayout.error = null }
+        }
+        viewModel.result.eventObserve(viewLifecycleOwner){
+            showMessage(it)
         }
     }
 }

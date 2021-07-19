@@ -11,6 +11,7 @@ import androidx.swiperefreshlayout.widget.CircularProgressDrawable
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.bumptech.glide.request.target.Target.SIZE_ORIGINAL
+import com.github.drjacky.imagepicker.ImagePicker
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
@@ -23,6 +24,7 @@ import com.leskov.g_shop_test.core.extensions.nonNullObserve
 import com.leskov.g_shop_test.core.fragment.BaseVMFragment
 import com.leskov.g_shop_test.databinding.FragmentProfileBinding
 import com.leskov.g_shop_test.utils.ProgressVisibility
+import com.leskov.g_shop_test.views.adverts.your_advert.edit_advert.EditAdvertFragment
 import java.io.File
 import java.util.*
 import kotlin.reflect.KClass
@@ -69,7 +71,19 @@ class ProfileFragment : BaseVMFragment<ProfileViewModel, FragmentProfileBinding>
         }
 
         binding.fab.setOnClickWithDebounce {
-            imageChooser()
+            ImagePicker.with(requireActivity())
+                .crop()
+                .galleryMimeTypes(  //Exclude gif images
+                    mimeTypes = arrayOf(
+                        "image/png",
+                        "image/jpg",
+                        "image/jpeg"
+                    )
+                )
+                .createIntentFromDialog {
+                    it.type = "image/*"
+                    startActivityForResult(it, SELECT_PICTURE)
+                }
         }
     }
 

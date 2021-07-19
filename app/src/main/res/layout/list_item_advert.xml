@@ -6,14 +6,12 @@
     <androidx.cardview.widget.CardView
         android:id="@+id/item"
         app:cardCornerRadius="10dp"
-        android:layout_marginTop="6dp"
-        android:layout_marginStart="12dp"
-        android:background="?selectableItemBackground"
-        android:layout_width="370dp"
+        android:layout_margin="6dp"
+        android:layout_width="380dp"
         android:layout_height="144dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="370dp"
+            android:layout_width="380dp"
             android:layout_height="144dp"
             android:background="?selectableItemBackground">
 

@@ -4,25 +4,22 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import com.github.drjacky.imagepicker.ImagePicker
 import com.leskov.g_shop.core.extensions.gone
 import com.leskov.g_shop.core.extensions.setOnClickWithDebounce
 import com.leskov.g_shop.core.extensions.visible
 import com.leskov.g_shop_test.R
+import com.leskov.g_shop_test.core.extensions.eventObserve
 import com.leskov.g_shop_test.core.extensions.nonNullObserve
 import com.leskov.g_shop_test.core.fragment.BaseVMFragment
 import com.leskov.g_shop_test.databinding.FragmentEditAdvertBinding
 import com.leskov.g_shop_test.utils.ProgressVisibility
 import com.leskov.g_shop_test.views.dialogs.DeleteAdvertDialog
 import com.leskov.g_shop_test.views.dialogs.PhotoBottomSheetDialog
-import timber.log.Timber
 import kotlin.reflect.KClass
 
 
 class EditAdvertFragment : BaseVMFragment<EditAdvertViewModel, FragmentEditAdvertBinding>() {
-
-    private var photoUploaded: Boolean = true
-    private var sizeBeforeUploading = 0
-    private var sizeOfUploading = -1
 
     override val viewModelClass: KClass<EditAdvertViewModel> = EditAdvertViewModel::class
 
@@ -34,7 +31,6 @@ class EditAdvertFragment : BaseVMFragment<EditAdvertViewModel, FragmentEditAdver
                 when (it) {
                     PhotoBottomSheetDialog.ProductPhotoAction.DELETE -> {
                         removePhoto(position)
-                        viewModel.addDeletePhoto(original)
                     }
                 }
             }
@@ -53,22 +49,41 @@ class EditAdvertFragment : BaseVMFragment<EditAdvertViewModel, FragmentEditAdver
 
     private fun initListeners() {
 
+//        binding.loadImage.setOnClickWithDebounce {
+//            Timber.d(sizeOfUploading.toString())
+//            if (sizeOfUploading == -1) {
+//                if (adapter.currentList.size < PHOTO_LIMIT) {
+//                    Intent(Intent.ACTION_GET_CONTENT).also {
+//                        it.type = "image/*"
+//                        startActivityForResult(it, REQUEST_CODE_IMAGE_PICK)
+//                    }
+//                } else {
+//                    showMessage(R.string.photo_limit)
+//                }
+//            } else {
+//                showMessage(R.string.wait_for_uploading)
+//            }
+//        }
+
         binding.loadImage.setOnClickWithDebounce {
-            Timber.d(sizeOfUploading.toString())
-            if (sizeOfUploading == -1) {
-                if (adapter.currentList.size < PHOTO_LIMIT) {
-                    Intent(Intent.ACTION_GET_CONTENT).also {
+            if (adapter.currentList.size < PHOTO_LIMIT) {
+                ImagePicker.with(requireActivity())
+                    .crop()
+                    .galleryMimeTypes(  //Exclude gif images
+                        mimeTypes = arrayOf(
+                            "image/png",
+                            "image/jpg",
+                            "image/jpeg"
+                        )
+                    )
+                    .createIntentFromDialog {
                         it.type = "image/*"
                         startActivityForResult(it, REQUEST_CODE_IMAGE_PICK)
                     }
-                } else {
-                    showMessage(R.string.photo_limit)
-                }
             } else {
-                showMessage(R.string.wait_for_uploading)
+                showMessage(R.string.photo_limit)
             }
         }
-
 
         binding.toolbar.setNavigationOnClickListener {
             navController.popBackStack()
@@ -83,22 +98,19 @@ class EditAdvertFragment : BaseVMFragment<EditAdvertViewModel, FragmentEditAdver
             true
         }
         binding.editAdvert.setOnClickWithDebounce {
-                if (adapter.currentList.isNotEmpty()) {
-                    hideKeyboard(activity)
-                    viewModel.updateAdvert(
-                        arguments?.getString("edit_advert") ?: "",
-                        binding.headline.text.toString(),
-                        binding.price.text.toString(),
-                        binding.description.text.toString()
-                    )
-                    viewModel.removeImage(
-                        arguments?.getString("edit_advert") ?: "",
-                        adapter.currentList
-                    )
-                    viewModel.clearLiveData()
-                } else {
-                    showMessage(R.string.add_one_photo)
-                }
+            hideKeyboard(activity)
+            viewModel.updateAdvert(
+                arguments?.getString("edit_advert") ?: "",
+                binding.headline.text.toString(),
+                binding.price.text.toString(),
+                binding.description.text.toString(),
+                adapter.currentList.size
+            )
+            viewModel.removeImage(
+                arguments?.getString("edit_advert") ?: "",
+                adapter.currentList
+            )
+            viewModel.clearLiveData()
         }
     }
 
@@ -110,10 +122,10 @@ class EditAdvertFragment : BaseVMFragment<EditAdvertViewModel, FragmentEditAdver
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_CODE_IMAGE_PICK) {
             data?.data?.let {
-                    val tempList = adapter.currentList.toMutableList()
-                    tempList.add(it.toString())
-                    adapter.submitList(tempList)
-                    adapter.notifyDataSetChanged()
+                val tempList = adapter.currentList.toMutableList()
+                tempList.add(it.toString())
+                adapter.submitList(tempList)
+                adapter.notifyDataSetChanged()
             }
         } else {
             return
@@ -132,6 +144,27 @@ class EditAdvertFragment : BaseVMFragment<EditAdvertViewModel, FragmentEditAdver
 
             adapter.submitList(it.images)
         }
+        viewModel.fieldState.eventObserve(viewLifecycleOwner) { fieldState ->
+            fieldState.headline?.let {
+                binding.headlineLayout.error = it
+            } ?: run { binding.headlineLayout.error = null }
+
+            fieldState.price?.let {
+
+                binding.priceLayout.error = it
+            } ?: run { binding.priceLayout.error = null }
+
+            fieldState.description?.let {
+
+                binding.descriptionLayout.error = it
+            } ?: run { binding.descriptionLayout.error = null }
+
+        }
+
+        viewModel.result.eventObserve(viewLifecycleOwner){
+            showMessage(it)
+        }
+
         viewModel.progressVisibility.nonNullObserve(this) {
             when (it) {
                 ProgressVisibility.SHOW -> {

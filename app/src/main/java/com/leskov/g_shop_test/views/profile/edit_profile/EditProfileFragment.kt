@@ -12,6 +12,7 @@ import com.leskov.g_shop.core.extensions.gone
 import com.leskov.g_shop.core.extensions.setOnClickWithDebounce
 import com.leskov.g_shop.core.extensions.visible
 import com.leskov.g_shop_test.R
+import com.leskov.g_shop_test.core.extensions.eventObserve
 import com.leskov.g_shop_test.core.extensions.nonNullObserve
 import com.leskov.g_shop_test.core.fragment.BaseVMFragment
 import com.leskov.g_shop_test.databinding.FragmentEditProfileBinding
@@ -41,28 +42,7 @@ class EditProfileFragment : BaseVMFragment<EditProfileViewModel, FragmentEditPro
 
     private fun initListeners() {
 
-        val listener = object : TextWatcher{
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                binding.emailLayout.error = null
-            }
-
-            override fun afterTextChanged(s: Editable?) {
-            }
-
-        }
-
-        binding.emailAdress.addTextChangedListener(listener)
-
         binding.save.setOnClickWithDebounce {
-
-            if (validateEmail()){
-                binding.emailLayout.error = getString(R.string.invalid_email)
-                showMessage(R.string.invalid_email)
-            } else {
-                binding.emailLayout.error = null
                 viewModel.updateUser(
                     binding.name.text.toString(),
                     binding.surname.text.toString(),
@@ -71,7 +51,6 @@ class EditProfileFragment : BaseVMFragment<EditProfileViewModel, FragmentEditPro
                     phoneNumber = binding.phoneNumber.text.toString()
                 )
                 viewModel.updateEmail(binding.emailAdress.text.toString())
-            }
         }
         binding.toolbar.setNavigationOnClickListener {
             navController.popBackStack()
@@ -108,10 +87,26 @@ class EditProfileFragment : BaseVMFragment<EditProfileViewModel, FragmentEditPro
                 }
             }
         }
-    }
+        viewModel.fieldState.eventObserve(viewLifecycleOwner) { fieldState ->
+            fieldState.name?.let {
+                binding.name.error = it
+            } ?: run { binding.name.error = null }
 
-    private fun validateEmail(): Boolean {
-        return (!Patterns.EMAIL_ADDRESS.matcher(binding.emailAdress.text.toString()).matches()
-                || TextUtils.isEmpty(binding.emailAdress.text.toString()))
+            fieldState.surName?.let {
+                binding.surname.error = it
+            } ?: run { binding.surname.error = null }
+
+            fieldState.city?.let {
+                binding.cityLayout.error = it
+            } ?: run { binding.city.error = null }
+
+            fieldState.phoneNumber?.let {
+                binding.phoneNumber.error = it
+            } ?: run { binding.phoneNumber.error = null }
+
+            fieldState.userDescription?.let {
+                binding.description.error = it
+            } ?: run { binding.description.error = null }
+        }
     }
 }

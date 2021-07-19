@@ -7,6 +7,7 @@ import com.leskov.g_shop.core.extensions.gone
 import com.leskov.g_shop.core.extensions.setOnClickWithDebounce
 import com.leskov.g_shop.core.extensions.visible
 import com.leskov.g_shop_test.R
+import com.leskov.g_shop_test.core.extensions.eventObserve
 import com.leskov.g_shop_test.core.extensions.nonNullObserve
 import com.leskov.g_shop_test.core.fragment.BaseVMFragment
 import com.leskov.g_shop_test.databinding.FragmentRegistationDataBinding
@@ -46,91 +47,19 @@ class RegistrationDataFragment :
     private fun initListeners() {
 
         binding.register.setOnClickWithDebounce {
-
-            if (binding.name.text.isNullOrEmpty() && binding.surname.text.isNullOrEmpty()
-                && binding.city.text.isNullOrEmpty() && binding.phoneNumber.text.isNullOrEmpty()
-            ) {
-                binding.name.error = getString(R.string.complete_this_field)
-                binding.surname.error = getString(R.string.complete_this_field)
-                binding.city.error = getString(R.string.complete_this_field)
-                binding.phoneNumber.error = getString(R.string.complete_this_field)
-                showMessage(R.string.complete_fields)
-            } else if (binding.name.text.isNullOrEmpty() && binding.surname.text.isNullOrEmpty()) {
-                binding.name.error = getString(R.string.complete_this_field)
-                binding.surname.error = getString(R.string.complete_this_field)
-                binding.city.error = null
-                binding.phoneNumber.error = null
-                showMessage(R.string.complete_fields)
-            } else if (binding.name.text.isNullOrEmpty() && binding.city.text.isNullOrEmpty()) {
-                binding.name.error = getString(R.string.complete_this_field)
-                binding.surname.error = null
-                binding.city.error = getString(R.string.complete_this_field)
-                binding.phoneNumber.error = null
-                showMessage(R.string.complete_fields)
-            } else if (binding.name.text.isNullOrEmpty() && binding.phoneNumber.text.isNullOrEmpty()) {
-                binding.name.error = getString(R.string.complete_this_field)
-                binding.surname.error = null
-                binding.city.error = null
-                binding.phoneNumber.error = getString(R.string.complete_this_field)
-                showMessage(R.string.complete_fields)
-            } else if (binding.surname.text.isNullOrEmpty() && binding.city.text.isNullOrEmpty()) {
-                binding.name.error = null
-                binding.surname.error = getString(R.string.complete_this_field)
-                binding.city.error = getString(R.string.complete_this_field)
-                binding.phoneNumber.error = null
-            } else if (binding.city.text.isNullOrEmpty() && binding.phoneNumber.text.isNullOrEmpty()) {
-                binding.name.error = null
-                binding.surname.error = null
-                binding.city.error = getString(R.string.complete_this_field)
-                binding.phoneNumber.error = getString(R.string.complete_this_field)
-                showMessage(R.string.complete_fields)
-            } else if (binding.surname.text.isNullOrEmpty() && binding.city.text.isNullOrEmpty() && binding.phoneNumber.text.isNullOrEmpty()) {
-                binding.name.error = null
-                binding.surname.error = getString(R.string.complete_this_field)
-                binding.city.error = getString(R.string.complete_this_field)
-                binding.phoneNumber.error = getString(R.string.complete_this_field)
-            } else if (binding.name.text.isNullOrEmpty() && binding.city.text.isNullOrEmpty() && binding.phoneNumber.text.isNullOrEmpty()){
-                binding.name.error = getString(R.string.complete_this_field)
-                binding.surname.error = null
-                binding.city.error = getString(R.string.complete_this_field)
-                binding.phoneNumber.error = getString(R.string.complete_this_field)
-            }
-            else if (binding.name.text.isNullOrEmpty()) {
-                binding.name.error = getString(R.string.complete_this_field)
-                binding.surname.error = null
-                binding.city.error = null
-                binding.phoneNumber.error = null
-                showMessage(R.string.complete_fields)
-            } else if (binding.surname.text.isNullOrEmpty()) {
-                binding.name.error = null
-                binding.surname.error = getString(R.string.complete_this_field)
-                binding.city.error = null
-                binding.phoneNumber.error = null
-                showMessage(R.string.complete_fields)
-            } else if (binding.city.text.isNullOrEmpty()) {
-                binding.name.error = null
-                binding.surname.error = null
-                binding.city.error = getString(R.string.complete_this_field)
-                binding.phoneNumber.error = null
-                showMessage(R.string.complete_fields)
-            } else if (binding.phoneNumber.text.isNullOrEmpty()) {
-                binding.name.error = null
-                binding.surname.error = null
-                binding.city.error = null
-                binding.phoneNumber.error = getString(R.string.complete_this_field)
-                showMessage(R.string.complete_fields)
-            } else {
-                observerLoadingProgress()
-                viewModel.createUser(
-                    auth.currentUser?.uid ?: "",
-                    binding.name.text.toString(),
-                    binding.surname.text.toString(), binding.city.text.toString(),
-                    binding.phoneNumber.text.toString(), "",
-                    auth.currentUser?.email ?: "",
-                    image = (auth.currentUser?.photoUrl ?: "") as String
-                )
-            }
+            observerLoadingProgress()
+            viewModel.createUser(
+                auth.currentUser?.uid ?: "",
+                binding.name.text.toString(),
+                binding.surname.text.toString(),
+                binding.city.text.toString(),
+                binding.phoneNumber.text.toString(),
+                "",
+                auth.currentUser?.email ?: "",
+                image = (auth.currentUser?.photoUrl ?: "") as String
+            )
         }
+
 
     }
 
@@ -150,6 +79,24 @@ class RegistrationDataFragment :
                     binding.photoLoading.root.gone()
                 }
             }
+        }
+        viewModel.fieldState.eventObserve(viewLifecycleOwner) { fieldState ->
+            fieldState.name?.let {
+                binding.nameLayout.error = it
+            } ?: run { binding.nameLayout.error = null }
+
+            fieldState.surName?.let {
+
+                binding.surnameLayout.error = it
+            } ?: run { binding.surnameLayout.error = null }
+
+            fieldState.city?.let {
+                binding.cityLayout.error = it
+            } ?: run { binding.cityLayout.error = null }
+
+            fieldState.phoneNumber?.let {
+                binding.phoneLayout.error = it
+            } ?: run { binding.phoneLayout.error = null }
         }
     }
 
